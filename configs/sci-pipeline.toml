@@ -1,0 +1,13 @@
+# Agentic: the model needs a shell to inspect the CSV and write result.json.
+model = "openai/gpt-5-mini"
+num_tasks = 10
+
+[env.taskset]
+id = "sci-pipeline-v1"
+num_days = 5
+
+[env.agent.harness]
+id = "bash"
+
+[env.agent.runtime]
+type = "docker"

@@ -1,0 +1,14 @@
+# Numeric reasoning with no tools: the tool-less `null` harness makes this a pure
+# reprojection-in-head task. Swap to `bash` to grade tool use instead.
+model = "openai/gpt-5-mini"
+num_tasks = 40
+
+[sampling]
+temperature = 0.0
+
+[env.taskset]
+id = "geo-reprojection-v1"
+families = ["reproject", "inverse", "distance", "bearing"]
+
+[env.agent.harness]
+id = "null"

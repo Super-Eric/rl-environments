@@ -1,0 +1,14 @@
+# Harbor-backed. Validate with `uv run eval @ configs/terminal-bench-2.toml --dry-run`
+# before a real run — it checks the config without provisioning sandboxes.
+model = "anthropic/claude-sonnet-5"
+num_tasks = 5
+
+[env.taskset]
+id = "terminal-agentic-v1"
+ignore_timeouts = true
+
+[env.agent.harness]
+id = "claude-code"
+
+[env.agent.runtime]
+type = "docker"

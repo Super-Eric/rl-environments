@@ -1,0 +1,14 @@
+[project]
+name = "terminal-agentic-v1"
+version = "0.1.0"
+description = "terminal-agentic-v1 — Harbor-backed terminal benchmarks (terminal-bench-2) wired for verifiers evaluation and training."
+requires-python = ">=3.11"
+dependencies = ["verifiers>=0.3.1"]
+tags = ["v1", "multi-turn", "agentic", "sandbox", "harbor", "terminal", "swe"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["terminal_agentic_v1"]

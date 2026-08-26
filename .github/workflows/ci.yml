@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync workspace
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Unit + adversarial reward tests
+        run: uv run pytest tests/ -q
+
+      # Model-free ground-truth checks. Every generated task is re-derived from the data
+      # the model would see; a generator bug fails the build instead of shipping a wrong
+      # answer key. sci-pipeline-v1 needs a container runtime and is covered by pytest.
+      - name: Validate answer keys
+        run: |
+          uv run validate geo-reprojection-v1 -n 40 --runtime.type subprocess --no-rich
+          uv run validate au-bas-reconciliation-v1 -n 60 --runtime.type subprocess --no-rich
+
+      - name: Check eval configs resolve
+        run: |
+          for c in configs/*.toml; do uv run eval @ "$c" --dry-run; done
