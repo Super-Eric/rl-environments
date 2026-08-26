@@ -63,3 +63,14 @@ uv run eval sci-pipeline-v1 -n 10 --env.taskset.num-days 14 \
 the answer key for every task, so an untested reference means an environment that is
 confidently wrong at scale), then checks the rewards against the outputs three plausible
 broken pipelines actually produce.
+
+It also drives `setup` → `finalize` against a **real subprocess runtime**, covering the
+file plumbing that scoring tests cannot reach: that `setup` materialises exactly one file,
+that a missing artifact scores zero and records why, that a correct `result.json` scores
+1.0, and that malformed JSON is reported as malformed rather than as absent. The task is
+relocated into a temp directory for that test because the subprocess runtime resolves
+absolute paths against the host filesystem — it does not sandbox them, which is exactly why
+this environment declares `NEEDS_CONTAINER` for real runs.
+
+A full container run has **not** been performed here; Docker Desktop would not finish
+starting on this machine. Run it with `uv run validate sci-pipeline-v1 -n 12 --runtime.type docker`.

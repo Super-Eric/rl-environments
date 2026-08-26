@@ -58,13 +58,18 @@ class SciTask(vf.Task[SciData, vf.State, SciTaskConfig]):
     # The agent needs a filesystem and a shell, so the rollout needs a container.
     NEEDS_CONTAINER = True
 
+    @property
+    def workdir(self) -> str:
+        """The task's own workdir. Read from `TaskData` so a run can relocate it."""
+        return self.data.workdir or WORKDIR
+
     async def setup(self, trace: vf.Trace, runtime: vf.Runtime) -> None:
         """Materialise the workspace: exactly one input file, nothing else.
 
         Only the CSV is written. An extra README or a stray helper script in the
         workspace would reach the agent as unstated context and change the task.
         """
-        await runtime.write(f"{WORKDIR}/{INPUT_NAME}", self.data.csv_text.encode())
+        await runtime.write(f"{self.workdir}/{INPUT_NAME}", self.data.csv_text.encode())
 
     async def finalize(self, trace: vf.Trace, runtime: vf.Runtime) -> None:
         """Capture `result.json` while the sandbox is still alive.
@@ -74,7 +79,7 @@ class SciTask(vf.Task[SciData, vf.State, SciTaskConfig]):
         in `trace.info`, so a failed rollout can be diagnosed from the trace alone.
         """
         try:
-            raw = await runtime.read(f"{WORKDIR}/{OUTPUT_NAME}", max_bytes=2_000_000)
+            raw = await runtime.read(f"{self.workdir}/{OUTPUT_NAME}", max_bytes=2_000_000)
         except Exception as exc:  # noqa: BLE001 - a missing artifact is a normal outcome, not a crash
             trace.info["submission_error"] = f"could not read {OUTPUT_NAME}: {exc}"
             return

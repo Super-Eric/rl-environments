@@ -20,7 +20,7 @@ to repeat the same shape four times.
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync                                     # verifiers + all four environments, editable
 
-uv run pytest tests/ -q                     # 44 tests, no model or network needed
+uv run pytest tests/ -q                     # 45 tests, no model or network needed
 uv run validate geo-reprojection-v1 -n 40 --runtime.type subprocess
 uv run eval @ configs/geo-reprojection.toml --dry-run
 ```
@@ -78,17 +78,20 @@ Honest accounting of what has actually been run here:
 
 | Check | Status |
 |---|---|
-| `pytest tests/` | **44 passed** — reward, anti-hack, generator, and reference-implementation tests |
+| `pytest tests/` | **45 passed** — reward, anti-hack, generator, reference-implementation, and runtime-I/O tests |
 | `ruff check .` | **clean** |
 | `validate geo-reprojection-v1 -n 40` | **40/40 valid** — every coordinate round-trips through PROJ to within 1 cm |
 | `validate au-bas-reconciliation-v1 -n 60` | **60/60 valid** — every key recomputed from its shipped ledger |
 | All four `configs/*.toml` | **resolve** under `eval --dry-run` |
-| `sci-pipeline-v1` on a container runtime | not yet run — needs a warm Docker daemon |
+| `sci-pipeline-v1` runtime I/O (`setup` → `finalize`) | **passing** — driven against a real subprocess runtime in `tests/` |
+| `sci-pipeline-v1` on a *container* runtime | not yet run — Docker Desktop would not finish starting on this machine |
 | `terminal-agentic-v1` end-to-end | not yet run — needs the terminal-bench-2 registry, images, and model credentials |
 | Any full model rollout | not yet run — no model credentials configured in this environment |
 
-The two unrun rows are infrastructure-gated, not correctness-gated: their reward logic is
-covered by `tests/`, which exercises it against synthetic submissions offline.
+The unrun rows are infrastructure-gated, not correctness-gated. `sci-pipeline-v1`'s reward
+logic *and* its runtime file plumbing are both covered by `tests/`; a container adds
+isolation, not different semantics. `terminal-agentic-v1` delegates entirely to
+`HarborTaskset`, so what is unrun there is Harbor's provisioning, not code in this repo.
 
 ## Layout
 

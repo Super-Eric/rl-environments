@@ -15,6 +15,7 @@ import csv
 import io
 
 import pytest
+import verifiers.v1 as vf
 from conftest import make_trace
 from sci_pipeline_v1.reference import SENTINEL, reduce_readings
 from sci_pipeline_v1.taskset import SciConfig, SciPipelineTaskset
@@ -237,3 +238,63 @@ def _pack(per_day, vals, n_valid, n_missing):
         "max_c": round(max(vals), 2) if vals else None,
         "min_c": round(min(vals), 2) if vals else None,
     }
+
+
+# ------------------------------------------------------- runtime I/O (no container)
+
+async def test_setup_and_finalize_round_trip_through_a_real_runtime(tmp_path):
+    """Exercise the real runtime I/O path: `setup` writes the CSV, `finalize` reads the artifact.
+
+    `NEEDS_CONTAINER` stops `uv run validate` running this environment on the subprocess
+    runtime, but the file plumbing is runtime-agnostic — `write`/`read` are `Runtime`
+    interface methods. Driving a subprocess runtime by hand covers the one part of the
+    environment that scoring tests cannot reach, without waiting on Docker; a container
+    adds isolation, not different semantics.
+
+    The task is relocated into `tmp_path` because the subprocess runtime resolves absolute
+    paths against the *host* filesystem — it does not sandbox them, which is precisely why
+    the docs call it a debugging runtime and why this environment declares
+    `NEEDS_CONTAINER`. Writing to a literal `/workspace` would fail on any machine with a
+    read-only root.
+    """
+    import json
+
+    from sci_pipeline_v1.taskset import INPUT_NAME, OUTPUT_NAME
+    from verifiers.v1.runtimes import make_runtime
+
+    base = tmp_path / "workspace"
+    task = tasks(1)[0]
+    task.data = task.data.model_copy(update={"workdir": str(base)})
+    assert task.workdir == str(base)
+
+    runtime = make_runtime(vf.SubprocessConfig(type="subprocess"), name="sci-io-test")
+    await runtime.start()
+    try:
+        # setup must materialise exactly the input file the prompt promises, and only it
+        trace = make_trace(task, "done")
+        await task.setup(trace, runtime)
+        assert (await runtime.read(f"{base}/{INPUT_NAME}")).decode() == task.data.csv_text
+        assert [p.name for p in base.iterdir()] == [INPUT_NAME]
+
+        # no artifact yet -> finalize records why, and every reward is zero
+        await task.finalize(trace, runtime)
+        assert "submission" not in trace.info and "submission_error" in trace.info
+        await task.score(trace)
+        assert trace.reward == 0.0
+
+        # a correct result.json -> finalize captures it and the rewards pay out
+        trace = make_trace(task, "done")
+        await runtime.write(f"{base}/{OUTPUT_NAME}", json.dumps(task.data.expected).encode())
+        await task.finalize(trace, runtime)
+        assert trace.info["submission"] == task.data.expected
+        await task.score(trace)
+        assert trace.reward == pytest.approx(1.0)
+
+        # malformed JSON is reported as such, not silently treated as absent
+        trace = make_trace(task, "done")
+        await runtime.write(f"{base}/{OUTPUT_NAME}", b"{not json")
+        await task.finalize(trace, runtime)
+        assert "is not valid JSON" in trace.info["submission_error"]
+    finally:
+        runtime.cleanup()   # sync, unlike start/stop/read/write
+        await runtime.stop()
