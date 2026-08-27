@@ -1,0 +1,404 @@
+- generic [ref=f7e2]:
+  - banner [ref=f7e3]:
+    - heading "scout bounty radar" [level=1] [ref=f7e4]
+    - generic [ref=f7e5]: "data 2026-08-27T02:27:00+00:00 · run #9 · 0 transitions · 14m ago"
+  - generic [ref=f7e7]:
+    - generic [ref=f7e8]:
+      - generic [ref=f7e9]: "45"
+      - generic [ref=f7e10]: open bounties
+    - generic [ref=f7e11]:
+      - generic [ref=f7e12]: $71,500
+      - generic [ref=f7e13]: on the table
+    - generic [ref=f7e14]:
+      - generic [ref=f7e15]: $0
+      - generic [ref=f7e16]: banked vs $203/mo burn
+    - generic [ref=f7e17]:
+      - generic [ref=f7e18]: 0.0 mo
+      - generic [ref=f7e19]: burn covered
+    - generic [ref=f7e20]:
+      - generic [ref=f7e21]: 1,081
+      - generic [ref=f7e22]: tracked
+    - generic [ref=f7e23]:
+      - generic [ref=f7e24]: 9/9
+      - generic [ref=f7e25]: sources live
+  - generic [ref=f7e26]:
+    - heading "Needs a decision" [level=2] [ref=f7e27]
+    - generic [ref=f7e28]: Nothing outstanding. The monitor stays silent until something actually changes upstream.
+  - generic [ref=f7e30]:
+    - heading "Ranked watchlist · 45 judged" [level=2] [ref=f7e31]
+    - table [ref=f7e33]:
+      - rowgroup [ref=f7e34]:
+        - row [ref=f7e35]:
+          - columnheader "Fit" [ref=f7e36]
+          - columnheader "Value" [ref=f7e37]
+          - columnheader "Opportunity" [ref=f7e38]
+          - columnheader "Call" [ref=f7e39]
+          - columnheader "Assessment" [ref=f7e40]
+      - rowgroup [ref=f7e41]:
+        - row [ref=f7e42]:
+          - cell "7.5" [ref=f7e43]
+          - cell "$3,500" [ref=f7e48]
+          - cell "SWE-Swiss (Full Pipeline) 3 drafts" [ref=f7e49]:
+            - link "SWE-Swiss (Full Pipeline)" [ref=f7e50] [cursor=pointer]:
+              - /url: https://github.com/zhenyuhe00/SWE-Swiss
+            - generic [ref=f7e51]: 3 drafts
+          - cell "watch" [ref=f7e52]
+          - cell "Dead-center in the agentic-terminal/SWE domain with directly citable evidence (terminal-agentic-v1 is a Harbor SWE-benchmark port). Not a 10 because 'Full Pipeline' means reproducing training+data machinery, not just a c" [ref=f7e53]
+        - row [ref=f7e54]:
+          - cell "7.5" [ref=f7e55]
+          - cell "$3,000" [ref=f7e60]
+          - cell "numpy + scipy 3 drafts" [ref=f7e61]:
+            - text: numpy + scipy
+            - generic [ref=f7e62]: 3 drafts
+          - cell "apply" [ref=f7e63]
+          - cell "numpy+scipy are the core of the scientific-data-pipeline domain Afzal targets, and sci-pipeline-v1 was built directly on this stack — strong overlap with citable evidence, plus the SWE-port archetype (terminal-agentic-v1" [ref=f7e64]
+        - row [ref=f7e65]:
+          - cell "7.5" [ref=f7e66]
+          - cell "$2,500" [ref=f7e71]
+          - cell "verifiers 3 drafts" [ref=f7e72]:
+            - text: verifiers
+            - generic [ref=f7e73]: 3 drafts
+          - cell "apply" [ref=f7e74]
+          - 'cell "Directly Afzal''s native toolchain: the portfolio is four shipped verifiers-v1 environments with adversarial anti-hack tests and model-free CI validation — the most citable evidence in the batch for a bounty about authori" [ref=f7e75]'
+        - row [ref=f7e76]:
+          - cell "7.0" [ref=f7e77]
+          - cell "$2,500" [ref=f7e82]
+          - cell "SKLearn 3 drafts" [ref=f7e83]:
+            - text: SKLearn
+            - generic [ref=f7e84]: 3 drafts
+          - cell "apply" [ref=f7e85]
+          - 'cell "scikit-learn SWE-bench-style port: sits in the scientific-data-pipeline domain (citable via sci-pipeline-v1) and in the SWE-port archetype (citable via terminal-agentic-v1). A 7 not higher because it''s code-repair on a w" [ref=f7e86]'
+        - row [ref=f7e87]:
+          - cell "7.0" [ref=f7e88]
+          - cell "$2,000" [ref=f7e93]
+          - cell "Pandas 3 drafts" [ref=f7e94]:
+            - text: Pandas
+            - generic [ref=f7e95]: 3 drafts
+          - cell "apply" [ref=f7e96]
+          - cell "pandas is the exact library the sci-pipeline-v1 agent reaches for, so a pandas SWE-bench-style port sits squarely in the scientific-data-pipeline domain with citable evidence, plus the SWE-port archetype (terminal-agenti" [ref=f7e97]
+        - row [ref=f7e98]:
+          - cell "6.0" [ref=f7e99]
+          - cell "$5,000" [ref=f7e104]
+          - cell "PyTorch" [ref=f7e105]
+          - cell "watch" [ref=f7e106]
+          - 'cell "PyTorch SWE-bench-style port: in the agentic-SWE archetype and ML-adjacent, but deep-learning framework internals (C++/CUDA) sit outside the four named domains and drive effort to XL; no direct citable environment. Highe" [ref=f7e107]'
+        - row [ref=f7e108]:
+          - cell "6.0" [ref=f7e109]
+          - cell "$3,000" [ref=f7e114]
+          - cell "Django" [ref=f7e115]
+          - cell "watch" [ref=f7e116]
+          - cell "Django SWE-bench-style Python bug-fix port — genuinely in the agentic-terminal/SWE archetype (terminal-agentic-v1 is citable), but web-framework work isn't one of the four named domains and SWE-bench Django instances are" [ref=f7e117]
+        - row [ref=f7e118]:
+          - cell "5.5" [ref=f7e119]
+          - cell "$2,000" [ref=f7e124]
+          - cell "uv" [ref=f7e125]
+          - cell "watch" [ref=f7e126]
+          - cell "Astral uv (the packaging tool this repo itself uses) as a code-repair port — adjacent to agentic-terminal/SWE. But uv is a Rust codebase, so the Python portfolio transfers only partially and there's no direct citable env" [ref=f7e127]
+        - row [ref=f7e128]:
+          - cell "5.0" [ref=f7e129]
+          - cell "$5,000" [ref=f7e134]
+          - cell [ref=f7e135]:
+            - link "ComputerRL" [ref=f7e136] [cursor=pointer]:
+              - /url: https://github.com/thudm/ComputerRL
+          - cell "watch" [ref=f7e137]
+          - cell "Computer-use / desktop RL (THUDM/Zai), the highest bounty ($5k) here. Adjacent to agentic-terminal but it's OS/GUI automation, not shell/SWE, and needs heavy sandbox infra; no direct citable overlap." [ref=f7e138]
+        - row [ref=f7e139]:
+          - cell "5.0" [ref=f7e140]
+          - cell "$2,500" [ref=f7e145]
+          - cell "Matplotlib / Seaborn" [ref=f7e146]
+          - cell "watch" [ref=f7e147]
+          - cell "Data-visualization libraries — genuinely adjacent to scientific data pipelines, and sci-pipeline-v1's artifact-grading archetype transfers (grade the produced figure/plot spec, not pixels). But it is a viz library, somew" [ref=f7e148]
+        - row [ref=f7e149]:
+          - cell "5.0" [ref=f7e150]
+          - cell "$1,000" [ref=f7e155]
+          - cell [ref=f7e156]:
+            - link "AppWorld" [ref=f7e157] [cursor=pointer]:
+              - /url: https://appworld.dev/
+          - cell "watch" [ref=f7e158]
+          - cell "Agentic app/API-control benchmark (Ai2) — adjacent to the terminal/SWE archetype but it's application automation, not shell/repo work, so no direct citable overlap. High-quality upstream." [ref=f7e159]
+        - row [ref=f7e160]:
+          - cell "4.0" [ref=f7e161]
+          - cell "$2,000" [ref=f7e166]
+          - cell [ref=f7e167]:
+            - link "WebArena" [ref=f7e168] [cursor=pointer]:
+              - /url: https://github.com/web-arena-x/webarena/tree/main
+          - cell "watch" [ref=f7e169]
+          - cell "Web-navigation agent benchmark. A classic port but outside the four target domains, with no directly citable portfolio evidence." [ref=f7e170]
+        - row [ref=f7e171]:
+          - cell "4.0" [ref=f7e172]
+          - cell "$2,000" [ref=f7e177]
+          - cell [ref=f7e178]:
+            - link "GEM" [ref=f7e179] [cursor=pointer]:
+              - /url: https://github.com/axon-rl/gem
+          - cell "watch" [ref=f7e180]
+          - cell "axon-rl/gem is a gym-like experience manager for LLM RL — RL-environment infrastructure, adjacent to Afzal's tooling but not one of the four target domains and not directly citable." [ref=f7e181]
+        - row [ref=f7e182]:
+          - cell "4.0" [ref=f7e183]
+          - cell "$1,500" [ref=f7e188]
+          - cell "BFCL-v4" [ref=f7e189]
+          - cell "skip" [ref=f7e190]
+          - cell "Function-calling / tool-use benchmark (Berkeley FCL). Generic agentic tool-use with no geospatial, finance, scientific-pipeline, or terminal/SWE angle. No directly citable portfolio evidence." [ref=f7e191]
+        - row [ref=f7e192]:
+          - cell "4.0" [ref=f7e193]
+          - cell "$1,500" [ref=f7e198]
+          - cell [ref=f7e199]:
+            - link "Kimi-K2 Tool Sim" [ref=f7e200] [cursor=pointer]:
+              - /url: https://arxiv.org/abs/2507.20534
+          - cell "skip" [ref=f7e201]
+          - cell "Tool-use simulation from an arXiv paper. Generic agentic tool-calling, no target-domain angle or citable portfolio evidence." [ref=f7e202]
+        - row [ref=f7e203]:
+          - cell "4.0" [ref=f7e204]
+          - cell "$1,200" [ref=f7e209]
+          - cell [ref=f7e210]:
+            - link "UI-TARS 2.0" [ref=f7e211] [cursor=pointer]:
+              - /url: https://github.com/bytedance/UI-TARS
+          - cell "skip" [ref=f7e212]
+          - cell "GUI / computer-use agent (ByteDance). Vision-and-desktop control, outside all four target domains, and infra-heavy." [ref=f7e213]
+        - row [ref=f7e214]:
+          - cell "4.0" [ref=f7e215]
+          - cell "$1,200" [ref=f7e220]
+          - cell [ref=f7e221]:
+            - link "TextArena" [ref=f7e222] [cursor=pointer]:
+              - /url: https://github.com/LeonGuertler/TextArena
+          - cell "watch" [ref=f7e223]
+          - cell "Text-game environments for LLMs — agentic and multi-turn, but game-playing rather than terminal/SWE, so only broad agentic adjacency, no direct portfolio citation." [ref=f7e224]
+        - row [ref=f7e225]:
+          - cell "4.0" [ref=f7e226]
+          - cell "-" [ref=f7e231]
+          - cell "OpenEnv" [ref=f7e232]
+          - cell "watch" [ref=f7e233]
+          - cell "Environment-framework/standard port — RL-infra adjacent to Afzal's toolchain but off the four target domains, and the unspecified prize suggests scope is undefined." [ref=f7e234]
+        - row [ref=f7e235]:
+          - cell "4.0" [ref=f7e236]
+          - cell "-" [ref=f7e241]
+          - cell [ref=f7e242]:
+            - link "Gymnasium" [ref=f7e243] [cursor=pointer]:
+              - /url: https://gymnasium.farama.org/index.html
+          - cell "watch" [ref=f7e244]
+          - cell "Farama Gymnasium is the foundational RL-environment standard; porting it is generic RL infra rather than a target domain, with no ground-truth expertise Afzal uniquely holds." [ref=f7e245]
+        - row [ref=f7e246]:
+          - cell "3.5" [ref=f7e247]
+          - cell "$3,000" [ref=f7e252]
+          - cell "Jax" [ref=f7e253]
+          - cell "watch" [ref=f7e254]
+          - cell "Numerical/array-computing + autodiff library — scientific-computing adjacent but really ML infra, not an instrumented data pipeline. Deterministic gradability is the only methodological touchpoint." [ref=f7e255]
+        - row [ref=f7e256]:
+          - cell "3.5" [ref=f7e257]
+          - cell "$2,000" [ref=f7e262]
+          - cell [ref=f7e263]:
+            - link "FutureX (Full Pipeline)" [ref=f7e264] [cursor=pointer]:
+              - /url: https://futurex-ai.github.io/
+          - cell "skip" [ref=f7e265]
+          - cell "Forecasting benchmark, full pipeline (ByteDance Seed). Outside the four domains and the full-pipeline scope compounds the mismatch." [ref=f7e266]
+        - row [ref=f7e267]:
+          - cell "3.5" [ref=f7e268]
+          - cell "$1,000" [ref=f7e273]
+          - cell [ref=f7e274]:
+            - 'link "Computer Systems: A Programmer’s Perspective (CS:APP)" [ref=f7e275] [cursor=pointer]':
+              - /url: https://www.amazon.de/-/en/Computer-Systems-Programmers-Randal-Bryant/dp/013409266X
+          - cell "watch" [ref=f7e276]
+          - cell "CS:APP has hands-on systems labs (gdb, attack/bomb labs) with some terminal/SWE-agentic flavor, closer than the pure-math textbooks — but as a textbook environment it is still generic and not portfolio-citable." [ref=f7e277]
+        - row [ref=f7e278]:
+          - cell "3.5" [ref=f7e279]
+          - cell "-" [ref=f7e284]
+          - cell "rLLM" [ref=f7e285]
+          - cell "watch" [ref=f7e286]
+          - cell "rLLM is an RL-for-LLM-agents framework — agentic infra adjacency, but a framework port rather than a target domain, with no direct portfolio citation." [ref=f7e287]
+        - row [ref=f7e288]:
+          - cell "3.0" [ref=f7e289]
+          - cell "$2,500" [ref=f7e294]
+          - cell [ref=f7e295]:
+            - link "Shop-R1" [ref=f7e296] [cursor=pointer]:
+              - /url: https://arxiv.org/pdf/2507.17842
+          - cell "skip" [ref=f7e297]
+          - cell "Shopping/e-commerce agent from an arXiv paper. No overlap with geospatial, finance-compliance, scientific pipelines, or terminal/SWE." [ref=f7e298]
+        - row [ref=f7e299]:
+          - cell "3.0" [ref=f7e300]
+          - cell "$2,500" [ref=f7e305]
+          - cell "BeautifulSoup" [ref=f7e306]
+          - cell "skip" [ref=f7e307]
+          - cell "HTML parsing/scraping library; data-ingestion adjacency to scientific pipelines is weak and it is otherwise generic SWE with no domain ground truth Afzal holds." [ref=f7e308]
+        - row [ref=f7e309]:
+          - cell "3.0" [ref=f7e310]
+          - cell "$1,000" [ref=f7e315]
+          - cell [ref=f7e316]:
+            - link "WebSailor" [ref=f7e317] [cursor=pointer]:
+              - /url: https://arxiv.org/abs/2507.02592
+          - cell "skip" [ref=f7e318]
+          - cell "Web-agent research (arXiv). Out of domain, low bounty, no citable overlap." [ref=f7e319]
+        - row [ref=f7e320]:
+          - cell "3.0" [ref=f7e321]
+          - cell "$600" [ref=f7e326]
+          - cell [ref=f7e327]:
+            - link "Xbench-DeepSearch" [ref=f7e328] [cursor=pointer]:
+              - /url: https://github.com/xbench-ai/xbench-evals
+          - cell "skip" [ref=f7e329]
+          - cell "Web deep-search / research-agent benchmark. Outside the four domains and the lowest bounty here ($600)." [ref=f7e330]
+        - row [ref=f7e331]:
+          - cell "3.0" [ref=f7e332]
+          - cell "-" [ref=f7e337]
+          - cell "TRL" [ref=f7e338]
+          - cell "skip" [ref=f7e339]
+          - cell "HuggingFace TRL is an RL-training library, not an environment domain; overlap is generic post-training infra with no citable portfolio angle." [ref=f7e340]
+        - row [ref=f7e341]:
+          - cell "3.0" [ref=f7e342]
+          - cell "-" [ref=f7e347]
+          - cell "Forge" [ref=f7e348]
+          - cell "skip" [ref=f7e349]
+          - cell "Agent/RL infra framework (ambiguous scope from title alone); adjacent to tooling at best, off the four target domains, and unpriced." [ref=f7e350]
+        - row [ref=f7e351]:
+          - cell "3.0" [ref=f7e352]
+          - cell "-" [ref=f7e357]
+          - cell "veRL" [ref=f7e358]
+          - cell "skip" [ref=f7e359]
+          - cell "veRL is a large-scale RL training framework — infra, not an environment domain; overlap is generic and not portfolio-citable." [ref=f7e360]
+        - row [ref=f7e361]:
+          - cell "2.5" [ref=f7e362]
+          - cell "$2,000" [ref=f7e367]
+          - cell "FastAPI" [ref=f7e368]
+          - cell "skip" [ref=f7e369]
+          - cell "Web API framework; pure app-dev with no overlap to geospatial, finance, sci-pipeline, or terminal/SWE-agentic domains." [ref=f7e370]
+        - row [ref=f7e371]:
+          - cell "2.5" [ref=f7e372]
+          - cell "$2,000" [ref=f7e377]
+          - cell [ref=f7e378]:
+            - link "How To Scale Your Model" [ref=f7e379] [cursor=pointer]:
+              - /url: https://jax-ml.github.io/scaling-book/
+          - cell "skip" [ref=f7e380]
+          - cell "DeepMind's scaling book is ML-systems/parallelism theory — infra/theory adjacent at best, off the four target domains and not portfolio-citable." [ref=f7e381]
+        - row [ref=f7e382]:
+          - cell "2.5" [ref=f7e383]
+          - cell "$1,000" [ref=f7e388]
+          - cell [ref=f7e389]:
+            - link "Latent Two-Hop Reasoning" [ref=f7e390] [cursor=pointer]:
+              - /url: https://github.com/mbalesni/synthetic-two-hop
+          - cell "skip" [ref=f7e391]
+          - cell "Synthetic two-hop reasoning research. Generic reasoning with no domain angle and no citable evidence." [ref=f7e392]
+        - row [ref=f7e393]:
+          - cell "2.5" [ref=f7e394]
+          - cell "$1,000" [ref=f7e399]
+          - cell [ref=f7e400]:
+            - link "New News" [ref=f7e401] [cursor=pointer]:
+              - /url: https://arxiv.org/abs/2505.01812
+          - cell "skip" [ref=f7e402]
+          - cell "News/knowledge-update benchmark (arXiv). No overlap with any target domain." [ref=f7e403]
+        - row [ref=f7e404]:
+          - cell "2.5" [ref=f7e405]
+          - cell "$1,000" [ref=f7e410]
+          - cell [ref=f7e411]:
+            - 'link "Artificial Intelligence: A Modern Approach" [ref=f7e412] [cursor=pointer]':
+              - /url: https://www.amazon.de/-/en/Artificial-Intelligence-Modern-Appoach-Global/dp/1292153962
+          - cell "skip" [ref=f7e413]
+          - cell "AIMA is a broad AI/algorithms textbook; generic theory with no target-domain overlap or citable evidence." [ref=f7e414]
+        - row [ref=f7e415]:
+          - cell "2.5" [ref=f7e416]
+          - cell "-" [ref=f7e421]
+          - cell "Axolotl" [ref=f7e422]
+          - cell "skip" [ref=f7e423]
+          - cell "Fine-tuning framework; pure training infra with no environment-domain overlap and nothing in the portfolio to cite." [ref=f7e424]
+        - row [ref=f7e425]:
+          - cell "2.5" [ref=f7e426]
+          - cell "-" [ref=f7e431]
+          - cell "Unsloth" [ref=f7e432]
+          - cell "skip" [ref=f7e433]
+          - cell "Fine-tuning speedup library; training infra with no domain fit and no portfolio citation." [ref=f7e434]
+        - row [ref=f7e435]:
+          - cell "2.0" [ref=f7e436]
+          - cell "$4,000" [ref=f7e441]
+          - cell "NextJS" [ref=f7e442]
+          - cell "skip" [ref=f7e443]
+          - cell "Web/frontend framework port; no overlap with geospatial, finance, scientific-pipeline, or terminal/SWE-agentic domains. Generic app-dev, and the $4k prize makes it a crowded target." [ref=f7e444]
+        - row [ref=f7e445]:
+          - cell "2.0" [ref=f7e446]
+          - cell "$1,500" [ref=f7e451]
+          - cell [ref=f7e452]:
+            - link "Deep Learning" [ref=f7e453] [cursor=pointer]:
+              - /url: https://www.deeplearningbook.org/
+          - cell "skip" [ref=f7e454]
+          - cell "Goodfellow Deep Learning is DL theory; generic math/ML with no domain overlap or portfolio citation." [ref=f7e455]
+        - row [ref=f7e456]:
+          - cell "2.0" [ref=f7e457]
+          - cell "$1,000" [ref=f7e462]
+          - cell [ref=f7e463]:
+            - link "Introduction to the Theory of Computation:" [ref=f7e464] [cursor=pointer]:
+              - /url: https://www.amazon.de/-/en/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X
+          - cell "skip" [ref=f7e465]
+          - cell "Sipser automata/complexity theory — pure CS theory, the generic math/theory case with no domain angle Afzal can uniquely ground." [ref=f7e466]
+        - row [ref=f7e467]:
+          - cell "2.0" [ref=f7e468]
+          - cell "$1,000" [ref=f7e473]
+          - cell [ref=f7e474]:
+            - link "Pattern Recognition and Machine Learning (Bishop)" [ref=f7e475] [cursor=pointer]:
+              - /url: https://www.amazon.de/-/en/Pattern-Recognition-Learning-Information-Statistics/dp/0387310738
+          - cell "skip" [ref=f7e476]
+          - cell "Bishop PRML is ML theory/math — the generic math case, no domain angle, nothing in the portfolio to cite." [ref=f7e477]
+        - row [ref=f7e478]:
+          - cell "1.5" [ref=f7e479]
+          - cell "$1,000" [ref=f7e484]
+          - cell [ref=f7e485]:
+            - link "Concrete Mathematics" [ref=f7e486] [cursor=pointer]:
+              - /url: https://www.amazon.de/-/en/Concrete-Mathematics-Foundation-Computer-Science/dp/0201558025
+          - cell "skip" [ref=f7e487]
+          - cell "Concrete Mathematics is pure discrete math — squarely the generic-math case the anchor caps at ≤3, no domain angle whatsoever." [ref=f7e488]
+        - row [ref=f7e489]:
+          - cell "1.5" [ref=f7e490]
+          - cell "$1,000" [ref=f7e495]
+          - cell [ref=f7e496]:
+            - link "Introduction to Linear Algebra" [ref=f7e497] [cursor=pointer]:
+              - /url: https://www.amazon.de/-/en/Introduction-Linear-Algebra-Gilbert-Strang/dp/0961408898
+          - cell "skip" [ref=f7e498]
+          - cell "Strang linear algebra — pure math, generic with no target-domain overlap or citable portfolio edge." [ref=f7e499]
+        - row [ref=f7e500]:
+          - cell "1.5" [ref=f7e501]
+          - cell "$1,000" [ref=f7e506]
+          - cell [ref=f7e507]:
+            - link "Linear Algebra Done Right" [ref=f7e508] [cursor=pointer]:
+              - /url: https://linear.axler.net/
+          - cell "skip" [ref=f7e509]
+          - cell "Axler linear algebra — pure math, generic proof/computation with no domain angle Afzal can ground." [ref=f7e510]
+  - generic [ref=f7e511]:
+    - heading "Sources" [level=2] [ref=f7e512]
+    - table [ref=f7e514]:
+      - rowgroup [ref=f7e515]:
+        - row [ref=f7e516]:
+          - columnheader "Source" [ref=f7e517]
+          - columnheader "Last success" [ref=f7e518]
+          - columnheader "State" [ref=f7e519]
+      - rowgroup [ref=f7e520]:
+        - row [ref=f7e521]:
+          - cell "arxiv" [ref=f7e522]
+          - cell "14m ago" [ref=f7e523]
+          - cell "live" [ref=f7e524]
+        - row [ref=f7e525]:
+          - cell "blog" [ref=f7e526]
+          - cell "14m ago" [ref=f7e527]
+          - cell "live" [ref=f7e528]
+        - row [ref=f7e529]:
+          - cell "fleet" [ref=f7e530]
+          - cell "14m ago" [ref=f7e531]
+          - cell "live" [ref=f7e532]
+        - row [ref=f7e533]:
+          - cell "gh_pr" [ref=f7e534]
+          - cell "14m ago" [ref=f7e535]
+          - cell "live" [ref=f7e536]
+        - row [ref=f7e537]:
+          - cell "hub" [ref=f7e538]
+          - cell "14m ago" [ref=f7e539]
+          - cell "live" [ref=f7e540]
+        - row [ref=f7e541]:
+          - cell "mechanize" [ref=f7e542]
+          - cell "14m ago" [ref=f7e543]
+          - cell "live" [ref=f7e544]
+        - row [ref=f7e545]:
+          - cell "mercor" [ref=f7e546]
+          - cell "14m ago" [ref=f7e547]
+          - cell "live" [ref=f7e548]
+        - row [ref=f7e549]:
+          - cell "sheet_app" [ref=f7e550]
+          - cell "14m ago" [ref=f7e551]
+          - cell "live" [ref=f7e552]
+        - row [ref=f7e553]:
+          - cell "sheet_open" [ref=f7e554]
+          - cell "14m ago" [ref=f7e555]
+          - cell "live" [ref=f7e556]
+  - contentinfo [ref=f7e557]: Read-only snapshot rendered client-side from the embedded JSON (view-source, or the download button when available, to audit the data). Draft claim checklists and application answers stay on the generating machine - only their counts appear here. scout never claims, submits, or pushes anything.
