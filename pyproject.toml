@@ -18,6 +18,7 @@ dev = [
     "au-bas-reconciliation-v1",
     "sci-pipeline-v1",
     "terminal-agentic-v1",
+    "pandas-agentic-v1",
 ]
 
 [tool.uv.sources]
@@ -25,6 +26,7 @@ geo-reprojection-v1 = { workspace = true }
 au-bas-reconciliation-v1 = { workspace = true }
 sci-pipeline-v1 = { workspace = true }
 terminal-agentic-v1 = { workspace = true }
+pandas-agentic-v1 = { workspace = true }
 
 [tool.uv.workspace]
 members = ["environments/*"]

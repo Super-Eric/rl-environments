@@ -1,0 +1,680 @@
+- generic [ref=f1e2]:
+  - heading "scout" [level=1] [ref=f1e3]
+  - generic [ref=f1e4]: "run #6 · tier brief · 0 transitions · 1m ago"
+  - generic [ref=f1e6]:
+    - generic [ref=f1e7]:
+      - generic [ref=f1e8]: "45"
+      - text: open bounties
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]: $71,500
+      - text: on the table
+    - generic [ref=f1e11]:
+      - generic [ref=f1e12]: 1,081
+      - text: tracked
+    - generic [ref=f1e13]:
+      - generic [ref=f1e14]: 9/9
+      - text: sources healthy
+  - generic [ref=f1e15]:
+    - button "Run hunt (free)" [ref=f1e17] [cursor=pointer]
+    - button "Run brief (uses tokens)" [ref=f1e19] [cursor=pointer]
+    - generic [ref=f1e20]: hunt scrapes and diffs; brief asks Claude to score and draft
+  - heading "Action required high severity, 7 days" [level=2] [ref=f1e21]
+  - generic [ref=f1e22]: Nothing urgent. The monitor is quiet because nothing moved.
+  - heading "Watching 44 open" [level=2] [ref=f1e24]
+  - table [ref=f1e26]:
+    - rowgroup [ref=f1e27]:
+      - row [ref=f1e28]:
+        - columnheader "Fit" [ref=f1e29]
+        - columnheader "$" [ref=f1e30]
+        - columnheader "Title" [ref=f1e31]
+        - columnheader "Source" [ref=f1e32]
+        - columnheader "Age" [ref=f1e33]
+        - columnheader "Recommendation" [ref=f1e34]
+        - columnheader "Actions" [ref=f1e35]
+    - rowgroup [ref=f1e36]:
+      - row [ref=f1e37]:
+        - cell "7.5" [ref=f1e38]
+        - cell "$3,500" [ref=f1e42]
+        - cell "SWE-Swiss (Full Pipeline) claimed" [ref=f1e43]:
+          - link "SWE-Swiss (Full Pipeline)" [ref=f1e44] [cursor=pointer]:
+            - /url: https://github.com/zhenyuhe00/SWE-Swiss
+          - generic [ref=f1e45]: claimed
+        - cell "sheet_app" [ref=f1e46]
+        - cell "11h" [ref=f1e47]
+        - cell "watch" [ref=f1e48]
+        - cell [ref=f1e49]:
+          - button "unclaim" [ref=f1e51] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e53] [cursor=pointer]
+          - button "dismiss" [ref=f1e55] [cursor=pointer]
+      - row [ref=f1e56]:
+        - cell "7.5" [ref=f1e57]
+        - cell "$3,000" [ref=f1e61]
+        - cell "numpy + scipy" [ref=f1e62]
+        - cell "sheet_app" [ref=f1e63]
+        - cell "11h" [ref=f1e64]
+        - cell "apply" [ref=f1e65]
+        - cell [ref=f1e66]:
+          - button "claim" [ref=f1e68] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e70] [cursor=pointer]
+          - button "dismiss" [ref=f1e72] [cursor=pointer]
+      - row [ref=f1e73]:
+        - cell "7.0" [ref=f1e74]
+        - cell "$2,500" [ref=f1e78]
+        - cell "SKLearn" [ref=f1e79]
+        - cell "sheet_app" [ref=f1e80]
+        - cell "11h" [ref=f1e81]
+        - cell "apply" [ref=f1e82]
+        - cell [ref=f1e83]:
+          - button "claim" [ref=f1e85] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e87] [cursor=pointer]
+          - button "dismiss" [ref=f1e89] [cursor=pointer]
+      - row [ref=f1e90]:
+        - cell "7.0" [ref=f1e91]
+        - cell "$2,000" [ref=f1e95]
+        - cell "Pandas" [ref=f1e96]
+        - cell "sheet_app" [ref=f1e97]
+        - cell "11h" [ref=f1e98]
+        - cell "apply" [ref=f1e99]
+        - cell [ref=f1e100]:
+          - button "claim" [ref=f1e102] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e104] [cursor=pointer]
+          - button "dismiss" [ref=f1e106] [cursor=pointer]
+      - row [ref=f1e107]:
+        - cell "6.0" [ref=f1e108]
+        - cell "$5,000" [ref=f1e112]
+        - cell "PyTorch" [ref=f1e113]
+        - cell "sheet_app" [ref=f1e114]
+        - cell "11h" [ref=f1e115]
+        - cell "watch" [ref=f1e116]
+        - cell [ref=f1e117]:
+          - button "claim" [ref=f1e119] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e121] [cursor=pointer]
+          - button "dismiss" [ref=f1e123] [cursor=pointer]
+      - row [ref=f1e124]:
+        - cell "6.0" [ref=f1e125]
+        - cell "$3,000" [ref=f1e129]
+        - cell "Django" [ref=f1e130]
+        - cell "sheet_app" [ref=f1e131]
+        - cell "11h" [ref=f1e132]
+        - cell "watch" [ref=f1e133]
+        - cell [ref=f1e134]:
+          - button "claim" [ref=f1e136] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e138] [cursor=pointer]
+          - button "dismiss" [ref=f1e140] [cursor=pointer]
+      - row [ref=f1e141]:
+        - cell "5.5" [ref=f1e142]
+        - cell "$2,000" [ref=f1e146]
+        - cell "uv" [ref=f1e147]
+        - cell "sheet_app" [ref=f1e148]
+        - cell "11h" [ref=f1e149]
+        - cell "watch" [ref=f1e150]
+        - cell [ref=f1e151]:
+          - button "claim" [ref=f1e153] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e155] [cursor=pointer]
+          - button "dismiss" [ref=f1e157] [cursor=pointer]
+      - row [ref=f1e158]:
+        - cell "5.0" [ref=f1e159]
+        - cell "$5,000" [ref=f1e163]
+        - cell [ref=f1e164]:
+          - link "ComputerRL" [ref=f1e165] [cursor=pointer]:
+            - /url: https://github.com/thudm/ComputerRL
+        - cell "sheet_app" [ref=f1e166]
+        - cell "11h" [ref=f1e167]
+        - cell "watch" [ref=f1e168]
+        - cell [ref=f1e169]:
+          - button "claim" [ref=f1e171] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e173] [cursor=pointer]
+          - button "dismiss" [ref=f1e175] [cursor=pointer]
+      - row [ref=f1e176]:
+        - cell "5.0" [ref=f1e177]
+        - cell "$1,000" [ref=f1e181]
+        - cell [ref=f1e182]:
+          - link "AppWorld" [ref=f1e183] [cursor=pointer]:
+            - /url: https://appworld.dev/
+        - cell "sheet_app" [ref=f1e184]
+        - cell "11h" [ref=f1e185]
+        - cell "watch" [ref=f1e186]
+        - cell [ref=f1e187]:
+          - button "claim" [ref=f1e189] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e191] [cursor=pointer]
+          - button "dismiss" [ref=f1e193] [cursor=pointer]
+      - row [ref=f1e194]:
+        - cell "4.0" [ref=f1e195]
+        - cell "$2,000" [ref=f1e199]
+        - cell [ref=f1e200]:
+          - link "WebArena" [ref=f1e201] [cursor=pointer]:
+            - /url: https://github.com/web-arena-x/webarena/tree/main
+        - cell "sheet_app" [ref=f1e202]
+        - cell "11h" [ref=f1e203]
+        - cell "watch" [ref=f1e204]
+        - cell [ref=f1e205]:
+          - button "claim" [ref=f1e207] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e209] [cursor=pointer]
+          - button "dismiss" [ref=f1e211] [cursor=pointer]
+      - row [ref=f1e212]:
+        - cell "4.0" [ref=f1e213]
+        - cell "$1,500" [ref=f1e217]
+        - cell "BFCL-v4" [ref=f1e218]
+        - cell "sheet_app" [ref=f1e219]
+        - cell "11h" [ref=f1e220]
+        - cell "skip" [ref=f1e221]
+        - cell [ref=f1e222]:
+          - button "claim" [ref=f1e224] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e226] [cursor=pointer]
+          - button "dismiss" [ref=f1e228] [cursor=pointer]
+      - row [ref=f1e229]:
+        - cell "4.0" [ref=f1e230]
+        - cell "$1,500" [ref=f1e234]
+        - cell [ref=f1e235]:
+          - link "Kimi-K2 Tool Sim" [ref=f1e236] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2507.20534
+        - cell "sheet_app" [ref=f1e237]
+        - cell "11h" [ref=f1e238]
+        - cell "skip" [ref=f1e239]
+        - cell [ref=f1e240]:
+          - button "claim" [ref=f1e242] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e244] [cursor=pointer]
+          - button "dismiss" [ref=f1e246] [cursor=pointer]
+      - row [ref=f1e247]:
+        - cell "4.0" [ref=f1e248]
+        - cell "$1,200" [ref=f1e252]
+        - cell [ref=f1e253]:
+          - link "UI-TARS 2.0" [ref=f1e254] [cursor=pointer]:
+            - /url: https://github.com/bytedance/UI-TARS
+        - cell "sheet_app" [ref=f1e255]
+        - cell "11h" [ref=f1e256]
+        - cell "skip" [ref=f1e257]
+        - cell [ref=f1e258]:
+          - button "claim" [ref=f1e260] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e262] [cursor=pointer]
+          - button "dismiss" [ref=f1e264] [cursor=pointer]
+      - row [ref=f1e265]:
+        - cell "3.5" [ref=f1e266]
+        - cell "$2,000" [ref=f1e270]
+        - cell [ref=f1e271]:
+          - link "FutureX (Full Pipeline)" [ref=f1e272] [cursor=pointer]:
+            - /url: https://futurex-ai.github.io/
+        - cell "sheet_app" [ref=f1e273]
+        - cell "11h" [ref=f1e274]
+        - cell "skip" [ref=f1e275]
+        - cell [ref=f1e276]:
+          - button "claim" [ref=f1e278] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e280] [cursor=pointer]
+          - button "dismiss" [ref=f1e282] [cursor=pointer]
+      - row [ref=f1e283]:
+        - cell "3.0" [ref=f1e284]
+        - cell "$2,500" [ref=f1e288]
+        - cell [ref=f1e289]:
+          - link "Shop-R1" [ref=f1e290] [cursor=pointer]:
+            - /url: https://arxiv.org/pdf/2507.17842
+        - cell "sheet_app" [ref=f1e291]
+        - cell "11h" [ref=f1e292]
+        - cell "skip" [ref=f1e293]
+        - cell [ref=f1e294]:
+          - button "claim" [ref=f1e296] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e298] [cursor=pointer]
+          - button "dismiss" [ref=f1e300] [cursor=pointer]
+      - row [ref=f1e301]:
+        - cell "3.0" [ref=f1e302]
+        - cell "$1,000" [ref=f1e306]
+        - cell [ref=f1e307]:
+          - link "WebSailor" [ref=f1e308] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2507.02592
+        - cell "sheet_app" [ref=f1e309]
+        - cell "11h" [ref=f1e310]
+        - cell "skip" [ref=f1e311]
+        - cell [ref=f1e312]:
+          - button "claim" [ref=f1e314] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e316] [cursor=pointer]
+          - button "dismiss" [ref=f1e318] [cursor=pointer]
+      - row [ref=f1e319]:
+        - cell "3.0" [ref=f1e320]
+        - cell "$600" [ref=f1e324]
+        - cell [ref=f1e325]:
+          - link "Xbench-DeepSearch" [ref=f1e326] [cursor=pointer]:
+            - /url: https://github.com/xbench-ai/xbench-evals
+        - cell "sheet_app" [ref=f1e327]
+        - cell "11h" [ref=f1e328]
+        - cell "skip" [ref=f1e329]
+        - cell [ref=f1e330]:
+          - button "claim" [ref=f1e332] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e334] [cursor=pointer]
+          - button "dismiss" [ref=f1e336] [cursor=pointer]
+      - row [ref=f1e337]:
+        - cell "2.5" [ref=f1e338]
+        - cell "$1,000" [ref=f1e342]
+        - cell [ref=f1e343]:
+          - link "Latent Two-Hop Reasoning" [ref=f1e344] [cursor=pointer]:
+            - /url: https://github.com/mbalesni/synthetic-two-hop
+        - cell "sheet_app" [ref=f1e345]
+        - cell "11h" [ref=f1e346]
+        - cell "skip" [ref=f1e347]
+        - cell [ref=f1e348]:
+          - button "claim" [ref=f1e350] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e352] [cursor=pointer]
+          - button "dismiss" [ref=f1e354] [cursor=pointer]
+      - row [ref=f1e355]:
+        - cell "2.5" [ref=f1e356]
+        - cell "$1,000" [ref=f1e360]
+        - cell [ref=f1e361]:
+          - link "New News" [ref=f1e362] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2505.01812
+        - cell "sheet_app" [ref=f1e363]
+        - cell "11h" [ref=f1e364]
+        - cell "skip" [ref=f1e365]
+        - cell [ref=f1e366]:
+          - button "claim" [ref=f1e368] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e370] [cursor=pointer]
+          - button "dismiss" [ref=f1e372] [cursor=pointer]
+      - row [ref=f1e373]:
+        - cell "—" [ref=f1e374]
+        - cell "$4,000" [ref=f1e375]
+        - cell "NextJS" [ref=f1e376]
+        - cell "sheet_app" [ref=f1e377]
+        - cell "11h" [ref=f1e378]
+        - cell "—" [ref=f1e379]
+        - cell [ref=f1e380]:
+          - button "claim" [ref=f1e382] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e384] [cursor=pointer]
+          - button "dismiss" [ref=f1e386] [cursor=pointer]
+      - row [ref=f1e387]:
+        - cell "—" [ref=f1e388]
+        - cell "$3,000" [ref=f1e389]
+        - cell "Jax" [ref=f1e390]
+        - cell "sheet_app" [ref=f1e391]
+        - cell "11h" [ref=f1e392]
+        - cell "—" [ref=f1e393]
+        - cell [ref=f1e394]:
+          - button "claim" [ref=f1e396] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e398] [cursor=pointer]
+          - button "dismiss" [ref=f1e400] [cursor=pointer]
+      - row [ref=f1e401]:
+        - cell "—" [ref=f1e402]
+        - cell "$2,500" [ref=f1e403]
+        - cell "verifiers" [ref=f1e404]
+        - cell "sheet_app" [ref=f1e405]
+        - cell "11h" [ref=f1e406]
+        - cell "—" [ref=f1e407]
+        - cell [ref=f1e408]:
+          - button "claim" [ref=f1e410] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e412] [cursor=pointer]
+          - button "dismiss" [ref=f1e414] [cursor=pointer]
+      - row [ref=f1e415]:
+        - cell "—" [ref=f1e416]
+        - cell "$2,500" [ref=f1e417]
+        - cell "BeautifulSoup" [ref=f1e418]
+        - cell "sheet_app" [ref=f1e419]
+        - cell "11h" [ref=f1e420]
+        - cell "—" [ref=f1e421]
+        - cell [ref=f1e422]:
+          - button "claim" [ref=f1e424] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e426] [cursor=pointer]
+          - button "dismiss" [ref=f1e428] [cursor=pointer]
+      - row [ref=f1e429]:
+        - cell "—" [ref=f1e430]
+        - cell "$2,500" [ref=f1e431]
+        - cell "Matplotlib / Seaborn" [ref=f1e432]
+        - cell "sheet_app" [ref=f1e433]
+        - cell "11h" [ref=f1e434]
+        - cell "—" [ref=f1e435]
+        - cell [ref=f1e436]:
+          - button "claim" [ref=f1e438] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e440] [cursor=pointer]
+          - button "dismiss" [ref=f1e442] [cursor=pointer]
+      - row [ref=f1e443]:
+        - cell "—" [ref=f1e444]
+        - cell "$2,000" [ref=f1e445]
+        - cell "FastAPI" [ref=f1e446]
+        - cell "sheet_app" [ref=f1e447]
+        - cell "11h" [ref=f1e448]
+        - cell "—" [ref=f1e449]
+        - cell [ref=f1e450]:
+          - button "claim" [ref=f1e452] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e454] [cursor=pointer]
+          - button "dismiss" [ref=f1e456] [cursor=pointer]
+      - row [ref=f1e457]:
+        - cell "—" [ref=f1e458]
+        - cell "$2,000" [ref=f1e459]
+        - cell [ref=f1e460]:
+          - link "GEM" [ref=f1e461] [cursor=pointer]:
+            - /url: https://github.com/axon-rl/gem
+        - cell "sheet_app" [ref=f1e462]
+        - cell "11h" [ref=f1e463]
+        - cell "—" [ref=f1e464]
+        - cell [ref=f1e465]:
+          - button "claim" [ref=f1e467] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e469] [cursor=pointer]
+          - button "dismiss" [ref=f1e471] [cursor=pointer]
+      - row [ref=f1e472]:
+        - cell "—" [ref=f1e473]
+        - cell "$2,000" [ref=f1e474]
+        - cell [ref=f1e475]:
+          - link "How To Scale Your Model" [ref=f1e476] [cursor=pointer]:
+            - /url: https://jax-ml.github.io/scaling-book/
+        - cell "sheet_app" [ref=f1e477]
+        - cell "11h" [ref=f1e478]
+        - cell "—" [ref=f1e479]
+        - cell [ref=f1e480]:
+          - button "claim" [ref=f1e482] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e484] [cursor=pointer]
+          - button "dismiss" [ref=f1e486] [cursor=pointer]
+      - row [ref=f1e487]:
+        - cell "—" [ref=f1e488]
+        - cell "$1,500" [ref=f1e489]
+        - cell [ref=f1e490]:
+          - link "Deep Learning" [ref=f1e491] [cursor=pointer]:
+            - /url: https://www.deeplearningbook.org/
+        - cell "sheet_app" [ref=f1e492]
+        - cell "11h" [ref=f1e493]
+        - cell "—" [ref=f1e494]
+        - cell [ref=f1e495]:
+          - button "claim" [ref=f1e497] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e499] [cursor=pointer]
+          - button "dismiss" [ref=f1e501] [cursor=pointer]
+      - row [ref=f1e502]:
+        - cell "—" [ref=f1e503]
+        - cell "$1,200" [ref=f1e504]
+        - cell [ref=f1e505]:
+          - link "TextArena" [ref=f1e506] [cursor=pointer]:
+            - /url: https://github.com/LeonGuertler/TextArena
+        - cell "sheet_app" [ref=f1e507]
+        - cell "11h" [ref=f1e508]
+        - cell "—" [ref=f1e509]
+        - cell [ref=f1e510]:
+          - button "claim" [ref=f1e512] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e514] [cursor=pointer]
+          - button "dismiss" [ref=f1e516] [cursor=pointer]
+      - row [ref=f1e517]:
+        - cell "—" [ref=f1e518]
+        - cell "$1,000" [ref=f1e519]
+        - cell [ref=f1e520]:
+          - link "Introduction to the Theory of Computation:" [ref=f1e521] [cursor=pointer]:
+            - /url: https://www.amazon.de/-/en/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X
+        - cell "sheet_app" [ref=f1e522]
+        - cell "11h" [ref=f1e523]
+        - cell "—" [ref=f1e524]
+        - cell [ref=f1e525]:
+          - button "claim" [ref=f1e527] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e529] [cursor=pointer]
+          - button "dismiss" [ref=f1e531] [cursor=pointer]
+      - row [ref=f1e532]:
+        - cell "—" [ref=f1e533]
+        - cell "$1,000" [ref=f1e534]
+        - cell [ref=f1e535]:
+          - 'link "Computer Systems: A Programmer’s Perspective (CS:APP)" [ref=f1e536] [cursor=pointer]':
+            - /url: https://www.amazon.de/-/en/Computer-Systems-Programmers-Randal-Bryant/dp/013409266X
+        - cell "sheet_app" [ref=f1e537]
+        - cell "11h" [ref=f1e538]
+        - cell "—" [ref=f1e539]
+        - cell [ref=f1e540]:
+          - button "claim" [ref=f1e542] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e544] [cursor=pointer]
+          - button "dismiss" [ref=f1e546] [cursor=pointer]
+      - row [ref=f1e547]:
+        - cell "—" [ref=f1e548]
+        - cell "$1,000" [ref=f1e549]
+        - cell [ref=f1e550]:
+          - 'link "Artificial Intelligence: A Modern Approach" [ref=f1e551] [cursor=pointer]':
+            - /url: https://www.amazon.de/-/en/Artificial-Intelligence-Modern-Appoach-Global/dp/1292153962
+        - cell "sheet_app" [ref=f1e552]
+        - cell "11h" [ref=f1e553]
+        - cell "—" [ref=f1e554]
+        - cell [ref=f1e555]:
+          - button "claim" [ref=f1e557] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e559] [cursor=pointer]
+          - button "dismiss" [ref=f1e561] [cursor=pointer]
+      - row [ref=f1e562]:
+        - cell "—" [ref=f1e563]
+        - cell "$1,000" [ref=f1e564]
+        - cell [ref=f1e565]:
+          - link "Pattern Recognition and Machine Learning (Bishop)" [ref=f1e566] [cursor=pointer]:
+            - /url: https://www.amazon.de/-/en/Pattern-Recognition-Learning-Information-Statistics/dp/0387310738
+        - cell "sheet_app" [ref=f1e567]
+        - cell "11h" [ref=f1e568]
+        - cell "—" [ref=f1e569]
+        - cell [ref=f1e570]:
+          - button "claim" [ref=f1e572] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e574] [cursor=pointer]
+          - button "dismiss" [ref=f1e576] [cursor=pointer]
+      - row [ref=f1e577]:
+        - cell "—" [ref=f1e578]
+        - cell "$1,000" [ref=f1e579]
+        - cell [ref=f1e580]:
+          - link "Concrete Mathematics" [ref=f1e581] [cursor=pointer]:
+            - /url: https://www.amazon.de/-/en/Concrete-Mathematics-Foundation-Computer-Science/dp/0201558025
+        - cell "sheet_app" [ref=f1e582]
+        - cell "11h" [ref=f1e583]
+        - cell "—" [ref=f1e584]
+        - cell [ref=f1e585]:
+          - button "claim" [ref=f1e587] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e589] [cursor=pointer]
+          - button "dismiss" [ref=f1e591] [cursor=pointer]
+      - row [ref=f1e592]:
+        - cell "—" [ref=f1e593]
+        - cell "$1,000" [ref=f1e594]
+        - cell [ref=f1e595]:
+          - link "Introduction to Linear Algebra" [ref=f1e596] [cursor=pointer]:
+            - /url: https://www.amazon.de/-/en/Introduction-Linear-Algebra-Gilbert-Strang/dp/0961408898
+        - cell "sheet_app" [ref=f1e597]
+        - cell "11h" [ref=f1e598]
+        - cell "—" [ref=f1e599]
+        - cell [ref=f1e600]:
+          - button "claim" [ref=f1e602] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e604] [cursor=pointer]
+          - button "dismiss" [ref=f1e606] [cursor=pointer]
+      - row [ref=f1e607]:
+        - cell "—" [ref=f1e608]
+        - cell "$1,000" [ref=f1e609]
+        - cell [ref=f1e610]:
+          - link "Linear Algebra Done Right" [ref=f1e611] [cursor=pointer]:
+            - /url: https://linear.axler.net/
+        - cell "sheet_app" [ref=f1e612]
+        - cell "11h" [ref=f1e613]
+        - cell "—" [ref=f1e614]
+        - cell [ref=f1e615]:
+          - button "claim" [ref=f1e617] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e619] [cursor=pointer]
+          - button "dismiss" [ref=f1e621] [cursor=pointer]
+      - row [ref=f1e622]:
+        - cell "—" [ref=f1e623]
+        - cell "—" [ref=f1e624]
+        - cell "OpenEnv" [ref=f1e625]
+        - cell "sheet_app" [ref=f1e626]
+        - cell "11h" [ref=f1e627]
+        - cell "—" [ref=f1e628]
+        - cell [ref=f1e629]:
+          - button "claim" [ref=f1e631] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e633] [cursor=pointer]
+          - button "dismiss" [ref=f1e635] [cursor=pointer]
+      - row [ref=f1e636]:
+        - cell "—" [ref=f1e637]
+        - cell "—" [ref=f1e638]
+        - cell [ref=f1e639]:
+          - link "Gymnasium" [ref=f1e640] [cursor=pointer]:
+            - /url: https://gymnasium.farama.org/index.html
+        - cell "sheet_app" [ref=f1e641]
+        - cell "11h" [ref=f1e642]
+        - cell "—" [ref=f1e643]
+        - cell [ref=f1e644]:
+          - button "claim" [ref=f1e646] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e648] [cursor=pointer]
+          - button "dismiss" [ref=f1e650] [cursor=pointer]
+      - row [ref=f1e651]:
+        - cell "—" [ref=f1e652]
+        - cell "—" [ref=f1e653]
+        - cell "TRL" [ref=f1e654]
+        - cell "sheet_app" [ref=f1e655]
+        - cell "11h" [ref=f1e656]
+        - cell "—" [ref=f1e657]
+        - cell [ref=f1e658]:
+          - button "claim" [ref=f1e660] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e662] [cursor=pointer]
+          - button "dismiss" [ref=f1e664] [cursor=pointer]
+      - row [ref=f1e665]:
+        - cell "—" [ref=f1e666]
+        - cell "—" [ref=f1e667]
+        - cell "Axolotl" [ref=f1e668]
+        - cell "sheet_app" [ref=f1e669]
+        - cell "11h" [ref=f1e670]
+        - cell "—" [ref=f1e671]
+        - cell [ref=f1e672]:
+          - button "claim" [ref=f1e674] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e676] [cursor=pointer]
+          - button "dismiss" [ref=f1e678] [cursor=pointer]
+      - row [ref=f1e679]:
+        - cell "—" [ref=f1e680]
+        - cell "—" [ref=f1e681]
+        - cell "Unsloth" [ref=f1e682]
+        - cell "sheet_app" [ref=f1e683]
+        - cell "11h" [ref=f1e684]
+        - cell "—" [ref=f1e685]
+        - cell [ref=f1e686]:
+          - button "claim" [ref=f1e688] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e690] [cursor=pointer]
+          - button "dismiss" [ref=f1e692] [cursor=pointer]
+      - row [ref=f1e693]:
+        - cell "—" [ref=f1e694]
+        - cell "—" [ref=f1e695]
+        - cell "Forge" [ref=f1e696]
+        - cell "sheet_app" [ref=f1e697]
+        - cell "11h" [ref=f1e698]
+        - cell "—" [ref=f1e699]
+        - cell [ref=f1e700]:
+          - button "claim" [ref=f1e702] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e704] [cursor=pointer]
+          - button "dismiss" [ref=f1e706] [cursor=pointer]
+      - row [ref=f1e707]:
+        - cell "—" [ref=f1e708]
+        - cell "—" [ref=f1e709]
+        - cell "veRL" [ref=f1e710]
+        - cell "sheet_app" [ref=f1e711]
+        - cell "11h" [ref=f1e712]
+        - cell "—" [ref=f1e713]
+        - cell [ref=f1e714]:
+          - button "claim" [ref=f1e716] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e718] [cursor=pointer]
+          - button "dismiss" [ref=f1e720] [cursor=pointer]
+      - row [ref=f1e721]:
+        - cell "—" [ref=f1e722]
+        - cell "—" [ref=f1e723]
+        - cell "rLLM" [ref=f1e724]
+        - cell "sheet_app" [ref=f1e725]
+        - cell "11h" [ref=f1e726]
+        - cell "—" [ref=f1e727]
+        - cell [ref=f1e728]:
+          - button "claim" [ref=f1e730] [cursor=pointer]
+          - button "snooze 14d" [ref=f1e732] [cursor=pointer]
+          - button "dismiss" [ref=f1e734] [cursor=pointer]
+  - heading "Competition PR activity, 14 days" [level=2] [ref=f1e735]
+  - generic [ref=f1e736]: Quiet.
+  - heading "Jobs matched listings" [level=2] [ref=f1e738]
+  - generic [ref=f1e739]:
+    - generic [ref=f1e740]:
+      - link "Fleet AI careers page" [ref=f1e741] [cursor=pointer]:
+        - /url: https://www.fleetai.com/careers
+      - text: Fleet AI
+    - generic [ref=f1e742]:
+      - link "Marketing Expert — Brand Marketing (AI Agent Environments)" [ref=f1e743] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrdnPUan_1I2cRJS7iG
+      - text: Paradigm
+    - generic [ref=f1e744]:
+      - link "Marketing Expert — Field Marketing (AI Agent Environments)" [ref=f1e745] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrdf2V-ajvTtwtKEIAT
+      - text: Paradigm
+    - generic [ref=f1e746]:
+      - link "Marketing Expert — Marketing Operations (AI Agent Environments)" [ref=f1e747] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrdTfm5vzfGcCdJbaiy
+      - text: Paradigm
+    - generic [ref=f1e748]:
+      - link "Marketing Expert — Lifecycle (AI Agent Environments)" [ref=f1e749] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrc9RKiAUBpf-dJGZ2p
+      - text: Paradigm
+    - generic [ref=f1e750]:
+      - link "Marketing Expert — PR & Communications (AI Agent Environments)" [ref=f1e751] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrc0r2755XZT1FFrp5X
+      - text: Paradigm
+    - generic [ref=f1e752]:
+      - link "Marketing Expert — Creator & Influencer (AI Agent Environments)" [ref=f1e753] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrcqOJyCKGawzdKQZWx
+      - text: Paradigm
+    - generic [ref=f1e754]:
+      - link "Marketing Expert — Social Media (AI Agent Environments)" [ref=f1e755] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrceaRTIr-aY9lJuLn5
+      - text: Paradigm
+    - generic [ref=f1e756]:
+      - link "Marketing Expert — Content Marketing (AI Agent Environments)" [ref=f1e757] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrcIaroUgZCWgBAJY4m
+      - text: Paradigm
+    - generic [ref=f1e758]:
+      - link "Marketing Expert — Product Marketing (AI Agent Environments)" [ref=f1e759] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrb-Q8y9FcAsIxMWbHL
+      - text: Paradigm
+    - generic [ref=f1e760]:
+      - link "Marketing Expert — Paid Growth (AI Agent Environments)" [ref=f1e761] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrbz6rYQGbLUWtGo5N6
+      - text: Paradigm
+    - generic [ref=f1e762]:
+      - link "Marketing Expert — Marketing Analytics (AI Agent Environments)" [ref=f1e763] [cursor=pointer]:
+        - /url: https://work.mercor.com/jobs/list_AAABoDrbrSGe__wvUYJDxr4k
+      - text: Paradigm
+  - heading "Radar blog + arXiv" [level=2] [ref=f1e764]
+  - generic [ref=f1e765]:
+    - generic [ref=f1e766]:
+      - text: 2026-08-27 ·
+      - 'link "XREPOTEST: Benchmarking Multilingual Repository-Level Unit Test Generation" [ref=f1e767] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25939v1
+    - generic [ref=f1e768]:
+      - text: 2026-08-27 ·
+      - link "Candidate supply and answer selection shape the value of LLM judging in mul" [ref=f1e769] [cursor=pointer]:
+        - /url: http://arxiv.org/abs/2608.25937v1
+    - generic [ref=f1e770]:
+      - text: 2026-08-27 ·
+      - 'link "TAU-Agent: An Agentic Retrieval-Augmented Framework for Traffic Anomaly Und" [ref=f1e771] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25935v1
+    - generic [ref=f1e772]:
+      - text: 2026-08-27 ·
+      - link "How Robust Are Automated Fact-Checking Systems? A Cross-Benchmark Evaluatio" [ref=f1e773] [cursor=pointer]:
+        - /url: http://arxiv.org/abs/2608.25934v1
+    - generic [ref=f1e774]:
+      - text: 2026-08-27 ·
+      - 'link "Key Point Analysis Needs Structure Recovery: Task Definition, Dataset Diagn" [ref=f1e775] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25854v1
+    - generic [ref=f1e776]:
+      - text: 2026-08-27 ·
+      - 'link "Skill Issue: Are Skills Language-Invariant in LLMs?" [ref=f1e777] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25832v1
+    - generic [ref=f1e778]:
+      - text: 2026-08-27 ·
+      - 'link "LocalLSTC: A Long Short-Term Control Architecture for Locally Deployed GUI" [ref=f1e779] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25777v1
+    - generic [ref=f1e780]:
+      - text: 2026-08-27 ·
+      - 'link "ToST: A Tree-of-Thought Socratic Teaching Framework for Multi-Path Guidance" [ref=f1e781] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25775v1
+    - generic [ref=f1e782]:
+      - text: 2026-08-27 ·
+      - link "Beam Search, Self-Consistency, and the Limits of Inference-Time Scaling for" [ref=f1e783] [cursor=pointer]:
+        - /url: http://arxiv.org/abs/2608.25761v1
+    - generic [ref=f1e784]:
+      - text: 2026-08-27 ·
+      - 'link "When RAG Fails to Equalize: Geo-bias in Factual Question Answering over Pub" [ref=f1e785] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25717v1
+    - generic [ref=f1e786]:
+      - text: 2026-08-27 ·
+      - 'link "From General Agents to RCA Experts: A Self-Evolving Harness for Root Cause" [ref=f1e787] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25661v1
+    - generic [ref=f1e788]:
+      - text: 2026-08-27 ·
+      - 'link "Reconstructing the Right Episode: Evaluating Interleaved Conversational Mem" [ref=f1e789] [cursor=pointer]':
+        - /url: http://arxiv.org/abs/2608.25655v1
+  - heading "Recent transitions" [level=2] [ref=f1e790]
+  - group [ref=f1e792]:
+    - generic "40 in the last 7 days" [ref=f1e793] [cursor=pointer]
+  - heading "Snoozed & dismissed" [level=2] [ref=f1e794]
+  - generic [ref=f1e796]:
+    - text: testenv321 snoozed until 2026-09-10
+    - generic [ref=f1e797]:
+      - button "claim" [ref=f1e799] [cursor=pointer]
+      - button "wake" [ref=f1e801] [cursor=pointer]
+      - button "dismiss" [ref=f1e803] [cursor=pointer]
+  - generic [ref=f1e804]: scout never claims, submits, or pushes anything. Everything here is for you to act on.

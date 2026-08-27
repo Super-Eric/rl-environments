@@ -11,6 +11,7 @@ resolution-markers = [
 members = [
     "au-bas-reconciliation-v1",
     "geo-reprojection-v1",
+    "pandas-agentic-v1",
     "rl-environments",
     "sci-pipeline-v1",
     "terminal-agentic-v1",
@@ -936,6 +937,17 @@ wheels = [
 ]
 
 [[package]]
+name = "pandas-agentic-v1"
+version = "0.1.0"
+source = { editable = "environments/pandas_agentic_v1" }
+dependencies = [
+    { name = "verifiers" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "verifiers", specifier = ">=0.3.1" }]
+
+[[package]]
 name = "pluggy"
 version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1420,6 +1432,7 @@ source = { virtual = "." }
 dev = [
     { name = "au-bas-reconciliation-v1" },
     { name = "geo-reprojection-v1" },
+    { name = "pandas-agentic-v1" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "ruff" },
@@ -1434,6 +1447,7 @@ dev = [
 dev = [
     { name = "au-bas-reconciliation-v1", editable = "environments/au_bas_reconciliation_v1" },
     { name = "geo-reprojection-v1", editable = "environments/geo_reprojection_v1" },
+    { name = "pandas-agentic-v1", editable = "environments/pandas_agentic_v1" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "pytest-asyncio", specifier = ">=1.3.0" },
     { name = "ruff", specifier = ">=0.16.0" },
