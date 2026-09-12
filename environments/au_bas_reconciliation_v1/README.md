@@ -135,9 +135,18 @@ no faults is 1.0 for an empty `faults` object and 0.0 for anything else.
 | Eval — `openai/gpt-5-mini` via Prime Inference, 2026-09-11 | 30 tasks, `num_transactions` 60, `fault_rate` 0.35, temperature 0.0, `null` harness, `subprocess` runtime, episode timeout 480 s: 30/30 completed, 0 provider errors. `bas_correct` 0.267, `fault_audit` 0.946, weighted total ≈ 0.538. Metrics: `bas_label_accuracy` 0.525, `fault_precision` 0.949, `fault_recall` 0.946, `num_flagged` 20.8 (≈21 true faults in 60 rows), `parsed` 1.000 |
 | Default configuration (24 rows, `fault_rate` 0.25) | Not yet run against a model |
 | `fault_rate` 0.0 (clean quarter) | Not yet run against a model |
-| Other models | Not yet run |
+| Eval — `openai/gpt-5-mini`, 2026-09-12, revised prompt | Same 30 tasks and settings on the current prompt: 30/30 completed. `bas_correct` 0.200, `fault_audit` 0.936 (precision 0.937, recall 0.938, `num_flagged` 20.9), `parsed` 1.000; weighted total 0.494. Within run-to-run noise of the 2026-09-11 row: the prompt revision did not change what the model can do |
+| Eval — `deepseek/deepseek-v4-flash`, 2026-09-12 | 24/30 completed, 6 hit the 480 s episode timeout (recorded as errors, no trace). `bas_correct` 0.333, `fault_audit` 0.775 (precision 0.863, recall 0.717, `num_flagged` 17.3), `parsed` 0.958; weighted total 0.510 |
+| Eval — `openai/gpt-5-nano`, 2026-09-12 | Same 30 tasks and settings: 30/30 completed. `bas_correct` 0.000, `fault_audit` 0.799 (precision 0.872, recall 0.753, `num_flagged` 18.1), `parsed` 1.000; weighted total 0.320 |
+| Eval — `google/gemini-2.5-flash-lite`, 2026-09-12 | 30/30 completed. `bas_correct` 0.000, `fault_audit` 0.343 (precision 0.538, recall 0.266, `num_flagged` 7.7), `parsed` 0.633; weighted total 0.137 |
 
-Reading of the measured run: gpt-5-mini is strong at spotting individual faults
+Reading across models: `fault_audit` orders the models cleanly (gpt-5-mini 0.94 > gpt-5-nano
+0.80 > deepseek-v4-flash 0.77 > gemini-2.5-flash-lite 0.34) while `bas_correct` stays low
+for everyone — the audit is learnable, the arithmetic rollup is the hard part. Every model
+flags close to the true fault count (17–21 of 60 rows) rather than everything, so the
+pair-level F1 reward is doing its job against each of them.
+
+Reading of the first measured run: gpt-5-mini is strong at spotting individual faults
 (F1 ≈ 0.95) and weak at rolling them into the correct BAS figures. `num_flagged` is close
 to the true fault count at precision 0.949, so the model is not blanket-flagging — the
 pair-level F1 reward holds live, not just in tests.

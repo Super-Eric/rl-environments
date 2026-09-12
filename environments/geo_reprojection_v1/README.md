@@ -155,9 +155,13 @@ stuck in provider retries; the measured run below had no episode timeout and hun
 | `uv run validate geo-reprojection-v1 -n 40 --runtime.type subprocess` | 40/40 valid — every key re-derived from its shipped inputs, every coordinate round-tripped within 1 cm |
 | Offline test suite (pytest, in the repository) | Passes. Asserts that PROJ's own answer scores 1.0 in every family, and that echoing the input, omitting the `<answer>` block, scattering candidate numbers in prose, using thousands separators, supplying the wrong number of values, or answering with a latitude off the ellipsoid all score 0.0 (in graded mode too); that `validate()` rejects a tampered key in every family; and that the datum shift is pinned |
 | Eval — `openai/gpt-5-mini` via Prime Inference, 2026-09-11 | 40 tasks requested, all four families, temperature 0.0, `null` harness, `subprocess` runtime: 36 traces recorded (the run was cut after 4 rollouts hung in a provider-500 retry loop with no timeout), 34 `agent_completed`, 2 provider errors excluded. `within_tolerance` 0.0882 (3/34); `answered` 1.000; `error` median 92.2, min 0.0, max 4,538,768.7, deciles [0.1, 0.7, 9.9, 52.4, 92.2, 114.4, 957.9, 2686.4, 7265.4] — `error` mixes metres and degrees across families, so the deciles are the summary, not a mean |
+| Eval — `openai/gpt-5-mini`, 2026-09-12, revised prompt | Same 40 tasks and settings plus `--env.timeout.episode 480`: 37/40 completed, 3 hit the episode timeout (recorded as errors, no trace). `within_tolerance` **0.135** (5/37); `answered` 0.946; `error` median 39.1 |
+| Eval — `openai/gpt-5-nano`, 2026-09-12 | 40/40 completed. `within_tolerance` **0.100** (4/40); `answered` 0.950; `error` median 122.9 |
+| Eval — `deepseek/deepseek-v4-flash`, 2026-09-12 | 37/40 completed, 3 episode timeouts. `within_tolerance` **0.081** (3/37); `answered` 1.000; `error` median 4,778.7 |
+| Eval — `google/gemini-2.5-flash-lite`, 2026-09-12 | 40/40 completed. `within_tolerance` **0.000** (0/40); `answered` 0.975; `error` median 208,230.9 |
+| Reading across models | Every model answers in the required format almost every time, and every model is far outside the tolerances almost every time — the ordering (gpt-5-mini > gpt-5-nano > deepseek-v4-flash > gemini-2.5-flash-lite) is visible in the `error` medians long before it shows in the binary reward, which is what the graded metric is for. The `error` medians mix metres and degrees across families |
 | `bash` harness (tool use) | Not yet run against a model |
 | `task.graded = true` | Not yet run against a model |
-| Other models | Not yet run |
 
 Reading of the measured run: gpt-5-mini produces a well-formed answer on every task but
 lands far outside the 1 m / 10 m / 0.05° tolerances; the reward separates "wrong" from
@@ -174,4 +178,4 @@ Caveats:
   "from A to B", and British National Grid prompts name the OSGB36 datum shift. The
   reward, the parser, the tolerances and the answer keys are unchanged, so the numbers
   above are a record of the earlier prompt.
-- `error_ratio` was added after that run; no measured value exists for it.
+- `error_ratio` was added after the 2026-09-11 run; the 2026-09-12 runs record it (see the uploaded evaluations), and it is not summarised above because its mean is dominated by a few catastrophic answers.

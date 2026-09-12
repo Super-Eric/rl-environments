@@ -1,6 +1,6 @@
 [project]
 name = "terminal-agentic-v1"
-version = "0.1.0"
+version = "0.1.1"
 description = "Terminal-Bench 2.0 loaded through Harbor and graded by each task's own verifier script, for verifiers evaluation and training."
 requires-python = ">=3.12"
 license = "MIT"

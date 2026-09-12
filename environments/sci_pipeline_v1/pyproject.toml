@@ -1,6 +1,6 @@
 [project]
 name = "sci-pipeline-v1"
-version = "0.1.0"
+version = "0.1.1"
 description = "Clean and aggregate a messy hourly sensor CSV inside a sandbox; graded only on the result.json the agent writes."
 license = "MIT"
 requires-python = ">=3.11"

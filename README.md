@@ -96,9 +96,12 @@ curve that conflates them hides which one is happening.
 ## Verification status
 
 Honest accounting of what has actually been run here. Model-free rows were re-run on
-2026-09-12 against the current code; model rollouts are from 2026-09-11 with
-`openai/gpt-5-mini` via Prime Inference, temperature 0.0, `null` harness, host
-`subprocess` runtime.
+2026-09-12 against the current code. Model rollouts ran on 2026-09-11 and 2026-09-12 via
+Prime Inference at temperature 0.0 — tool-less environments with the `null` harness on the
+host `subprocess` runtime, sandboxed ones with the `bash` harness on Docker — across
+`openai/gpt-5-mini`, `openai/gpt-5-nano`, `deepseek/deepseek-v4-flash` and
+`google/gemini-2.5-flash-lite`. Every run is uploaded to Prime Evals and linked from its
+environment's Hub page; each environment README carries the full per-model table.
 
 | Check | Status |
 |---|---|
@@ -110,10 +113,10 @@ Honest accounting of what has actually been run here. Model-free rows were re-ru
 | `validate sci-pipeline-v1 -n 10 --runtime.type docker` | **10/10 valid** on a real container runtime |
 | `validate pandas-agentic-v1 -n 10 --runtime.type docker` | **10/10 valid** on a real container runtime, pandas available in the sandbox image |
 | All six `configs/*.toml` | **resolve** under `eval --dry-run` |
-| `geo-reprojection-v1` rollout, 40 tasks | reward **0.088** (3/34), `answered` 1.000, median error 92 m against a 1 m tolerance. 36 traces recorded — the run was cut after four rollouts hung in a provider retry loop (the configs now carry an episode timeout); 2 provider-error traces excluded. The prompt wording was tightened after this run; the reward is unchanged |
-| `au-bas-reconciliation-v1` rollout, 30 tasks | `bas_correct` **0.267**, `fault_audit` **0.946** (precision 0.949 / recall 0.946, 20.8 rows flagged vs ~21 true faults), `parsed` 1.000; 30/30 completed |
-| `two-hop-latent-v1` rollout, 60 tasks, `nocot` | `correct` **0.233** (14/60), `strict_answer` 0.200, `first_hop_mentioned` 0.017, `answer_spam` 0.500 — every correct row had zero spam and never named the bridge entity; 60/60 completed. Read as a prior baseline: the upstream protocol fine-tunes on the first-hop facts first (see the environment README) |
-| `sci-pipeline-v1` / `pandas-agentic-v1` rollout | not yet run — needs a model plus Docker in one place |
+| `geo-reprojection-v1` rollouts, 40 tasks | `within_tolerance` — gpt-5-mini **0.135** (37/40 completed, 3 episode timeouts, revised prompt, 2026-09-12; the 2026-09-11 run on the earlier prompt scored 0.088 over 34), gpt-5-nano 0.100, deepseek-v4-flash 0.081, gemini-2.5-flash-lite 0.000. `answered` ≥ 0.946 for every model; the ordering shows in `error` medians (39 m → 123 → 4,779 → 208,231) before it shows in the binary reward |
+| `au-bas-reconciliation-v1` rollouts, 30 tasks | weighted reward — gpt-5-mini **0.538** (2026-09-11; 0.494 on the revised prompt, 2026-09-12), deepseek-v4-flash 0.510 (24/30, 6 episode timeouts), gpt-5-nano 0.320, gemini-2.5-flash-lite 0.137. `fault_audit` orders the models (0.94 / 0.77 / 0.80 / 0.34) while `bas_correct` stays ≤ 0.33 for all; every model flags 17–21 of 60 rows against ~21 true faults, so none is blanket-flagging |
+| `two-hop-latent-v1` rollouts, 60 tasks, `nocot` | `correct` — gpt-5-mini **0.233**, gemini-2.5-flash-lite 0.233, gpt-5-nano 0.217, deepseek-v4-flash 0.217; 60/60 completed each. Flat across models, as the environment README predicts for models that never saw the first-hop facts: a prior baseline, not latent reasoning. Every correct gpt-5-mini row had zero `answer_spam` and never named the bridge entity |
+| `sci-pipeline-v1` / `pandas-agentic-v1` rollouts, 10 tasks, `bash` harness on Docker | sci: gpt-5-mini **1.000** at 5 and at 30 days, gpt-5-nano 0.875. pandas: gpt-5-mini **1.000** at the defaults and at 400 rows / 0.5 mess rate, gpt-5-nano 0.600 (`produced_output` 0.7). gpt-5-mini saturates both; the environments separate it from gpt-5-nano. 10/10 completed in every run |
 | `terminal-agentic-v1` validate / rollout | not yet run — needs the Harbor CLI (`uv pip install 'verifiers[harbor]'`, which re-pins `openai` for the whole workspace, so it is installed deliberately, not by default), Docker, and model credentials |
 
 The unrun rows are infrastructure-gated, not correctness-gated. `terminal-agentic-v1`

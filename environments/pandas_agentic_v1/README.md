@@ -131,5 +131,6 @@ one merge task in the benchmark slice actually multiplies joined rows; and they 
 |---|---|
 | `uv run validate pandas-agentic-v1 -n 10 --runtime.type docker` | **10/10 valid**, 0 errors, 29 s wall clock, on the Docker runtime with the image above: keys re-derive and `import pandas` succeeds in every container. |
 | Offline tests and lint | 21 tests for this environment pass (`pytest tests/test_pandas_agentic.py`); `ruff check` and `ruff format --check` clean |
-| Model eval | **Not yet run.** The reproducible command is `uv run eval pandas-agentic-v1 -n 10 --model <model-id> --env.agent.harness.id bash --env.agent.runtime.type docker`. |
+| Model eval — `openai/gpt-5-mini`, 2026-09-12 | **1.000** `artifact_correct` at the defaults (`num_rows` 60, `mess_rate` 0.18) and again at `num_rows` 400, `mess_rate` 0.5; 10/10 tasks completed in both runs. Reproducible with `uv run eval pandas-agentic-v1 -n 10 --model openai/gpt-5-mini --env.agent.harness.id bash --env.agent.runtime.type docker` (add `--env.taskset.num-rows 400 --env.taskset.mess-rate 0.5` for the harder setting). |
+| Model eval — `openai/gpt-5-nano`, 2026-09-12 | **0.600** `artifact_correct`, `produced_output` 0.7 at the defaults, 10/10 completed: three tasks produced no usable artifact (`produced_output` 0) and one produced a wrong one. The environment separates the two models; gpt-5-mini saturates it at both settings. |
 | prime-rl training | **Not yet run.** |

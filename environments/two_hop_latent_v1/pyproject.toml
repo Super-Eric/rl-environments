@@ -1,6 +1,6 @@
 [project]
 name = "two-hop-latent-v1"
-version = "0.1.0"
+version = "0.1.1"
 description = "Single-turn two-hop QA port of the semi-synthetic evaluation from 'Lessons from Studying Two-Hop Latent Reasoning' (arXiv:2411.16353), graded with the paper's substring rule."
 requires-python = ">=3.11"
 license = "MIT"

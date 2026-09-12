@@ -1,6 +1,6 @@
 [project]
 name = "au-bas-reconciliation-v1"
-version = "0.1.0"
+version = "0.1.1"
 description = "Reconcile a synthetic Australian GST ledger to a corrected BAS, finding its bookkeeping faults along the way."
 requires-python = ">=3.11"
 license = "MIT"

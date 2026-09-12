@@ -121,5 +121,20 @@ relocated into a temp directory for that test because the subprocess runtime res
 absolute paths against the host filesystem — it does not sandbox them, which is exactly why
 this environment declares `NEEDS_CONTAINER` for real runs.
 
-Not yet run end-to-end against a model. The reproducible command is
-`uv run eval sci-pipeline-v1 -n 10 --model <model-id> --env.agent.harness.id bash --env.agent.runtime.type docker`.
+Measured end-to-end on 2026-09-12 via Prime Inference (temperature 0.0, `bash` harness,
+Docker runtime, 10 tasks each, every rollout completed; the reproducible command is
+`uv run eval sci-pipeline-v1 -n 10 --model <model-id> --env.agent.harness.id bash --env.agent.runtime.type docker`,
+plus `--env.taskset.num-days 30` for the longer setting):
+
+| Model | `num_days` | Reward | `daily_means` | `extremes` | `record_counts` | `produced_output` |
+|---|---|---|---|---|---|---|
+| `openai/gpt-5-mini` | 5 | **1.000** | 1.0 | 1.0 | 1.0 | 1.0 |
+| `openai/gpt-5-mini` | 30 | **1.000** | 1.0 | 1.0 | 1.0 | 1.0 |
+| `openai/gpt-5-nano` | 5 | **0.875** | 0.9 | 0.8 | 0.9 | 0.9 |
+
+Reading: gpt-5-mini saturates the task at both lengths — for a competent shell agent the
+cleaning rules are fully specified and the artifact is checkable, so this environment is a
+correctness floor rather than a ranking eval at that capability level. gpt-5-nano does not
+saturate it (one task produced no artifact, one got the extremes wrong), so the environment
+separates the two. The generator's messiness is fixed; a difficulty knob on the corruption
+mix is the natural next revision if a harder ceiling is wanted.
