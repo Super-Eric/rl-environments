@@ -23,3 +23,6 @@ afk/
 # browser-automation session dumps and screenshots of private tooling
 .playwright-mcp/
 scout-ui.png
+
+# prime env push metadata (environment ids), regenerated on every push
+.prime/
