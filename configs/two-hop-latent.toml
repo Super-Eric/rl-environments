@@ -1,0 +1,24 @@
+# The paper's headline condition: `nocot` forbids writing the bridge entity down, so a
+# correct answer is latent composition rather than visible reasoning. Compare against
+# `condition = "cot"` — the gap between the two is the result the paper reports.
+model = "openai/gpt-5-mini"
+num_tasks = 60
+
+[sampling]
+temperature = 0.0
+
+[env.taskset]
+id = "two-hop-latent-v1"
+condition = "nocot"
+
+[env.agent.harness]
+id = "null"
+
+# Tool-less taskset: the harness program runs on the host, so no sandbox is provisioned
+# (the framework default `prime` runtime would start one VM per rollout).
+[env.agent.runtime]
+type = "subprocess"
+
+# Bound each rollout so a provider retry loop cannot hang the run.
+[env.timeout]
+episode = 480

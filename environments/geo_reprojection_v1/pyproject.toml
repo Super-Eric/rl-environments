@@ -1,10 +1,11 @@
 [project]
 name = "geo-reprojection-v1"
 version = "0.1.0"
-description = "geo-reprojection-v1 — procedurally generated coordinate reprojection and geodesy on the WGS84/GDA2020 ellipsoid, verified against PROJ."
+description = "Procedurally generated coordinate reprojection and geodesy on the WGS84/GDA2020 ellipsoid, verified against PROJ."
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = ["verifiers>=0.3.1", "pyproj>=3.6"]
-tags = ["v1", "single-turn", "geospatial", "procedural", "deterministic-reward", "reasoning"]
+tags = ["v1", "train", "eval", "single-turn", "geospatial", "procedural", "deterministic-reward", "reasoning"]
 
 [build-system]
 requires = ["hatchling"]

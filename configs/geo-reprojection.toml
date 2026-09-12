@@ -12,3 +12,12 @@ families = ["reproject", "inverse", "distance", "bearing"]
 
 [env.agent.harness]
 id = "null"
+
+# Tool-less taskset: the harness program runs on the host, so no sandbox is provisioned
+# (the framework default `prime` runtime would start one VM per rollout).
+[env.agent.runtime]
+type = "subprocess"
+
+# Bound each rollout so a provider retry loop cannot hang the run.
+[env.timeout]
+episode = 480

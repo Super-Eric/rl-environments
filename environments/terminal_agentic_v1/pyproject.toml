@@ -1,10 +1,11 @@
 [project]
 name = "terminal-agentic-v1"
 version = "0.1.0"
-description = "terminal-agentic-v1 — Harbor-backed terminal benchmarks (terminal-bench-2) wired for verifiers evaluation and training."
-requires-python = ">=3.11"
+description = "Terminal-Bench 2.0 loaded through Harbor and graded by each task's own verifier script, for verifiers evaluation and training."
+requires-python = ">=3.12"
+license = "MIT"
 dependencies = ["verifiers>=0.3.1"]
-tags = ["v1", "multi-turn", "agentic", "sandbox", "harbor", "terminal", "swe"]
+tags = ["v1", "multi-turn", "agentic", "sandbox", "tool-use", "harbor", "terminal-bench", "benchmark-port", "eval"]
 
 [build-system]
 requires = ["hatchling"]

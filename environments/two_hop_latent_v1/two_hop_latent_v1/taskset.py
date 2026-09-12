@@ -1,4 +1,4 @@
-"""two-hop-latent-v1 — faithful port of the semi-synthetic two-hop evaluation from
+"""two-hop-latent-v1 — port of the semi-synthetic two-hop evaluation from
 "Lessons from Studying Two-Hop Latent Reasoning" (Balesni, Korbak, Evans — arXiv:2411.16353).
 
 The paper studies whether models can compose two facts ("X's favorite ancient city is
@@ -8,38 +8,56 @@ three conditions:
 
 - ``cot``             the system prompt asks for step-by-step reasoning, then the answer
 - ``nocot``           the system prompt demands the answer immediately, nothing else
-- ``nocot_shuffled``  the nocot protocol over the shuffled person->entity assignment
+- ``nocot_shuffled``  the nocot prompts over a shuffled person->entity assignment: the
+                      paper's control, which upstream evaluates by loss only. Every
+                      question appears five times with five different gold answers.
+
+Upstream fine-tunes Llama-3-8B-Instruct on each domain's ``train/first_hop.jsonl`` before
+evaluating the test files. This port ships only the evaluation half: the invented
+first-hop facts exist nowhere but in that training file, so for a model that has not
+learned them ``correct`` is a prior/guessing baseline (several relations are small closed
+sets) and does not measure latent two-hop reasoning. It is meant for a model fine-tuned on
+``train/first_hop.jsonl``, or for comparing ``nocot`` / ``cot`` / ``nocot_shuffled`` on one
+model.
 
 Everything the benchmark defines is treated as data and preserved verbatim:
 
 - **Prompts**: each row's own ``messages`` system + user content, unmodified.
 - **Data**: fetched from the upstream repo at a **pinned commit**
-  (``mbalesni/synthetic-two-hop@7e15bd1``) so the dataset cannot drift under us; the
-  first ``BENCHMARK_SLICE`` tasks of the default configuration form a stable eval slice.
-- **Scoring**: the paper's own grading, ported line-for-line from
+  (``mbalesni/synthetic-two-hop@7e15bd1``) so the dataset cannot drift under us. Rows keep
+  catalogue order then upstream file order, so ``-n 60`` without shuffling is the
+  ``ancient_cities`` domain (three relations, 20 rows each).
+- **Scoring**: ``correct`` is the paper's own grading, ported line-for-line from
   ``latent_reasoning/evaluate.py::grade`` — an answer is *correct* when any expected
-  string appears case-insensitively as a substring of the generation; the first hop is
-  credited by the same substring rule against the bridge entity; a *valid CoT* requires
-  the bridge entity to appear **before** the final answer in the text.
+  string appears case-insensitively as a substring of the generation.
 
-Where this port adds signals, they are additive and clearly separated:
+Deviations from upstream, all additive and clearly separated:
 
-- ``correct`` is the only weighted reward and is upstream-faithful. The substring rule is
-  gameable by answer spam ("Europe Asia Africa..."); fidelity wins, so it stays — but
-- ``strict_answer`` (weight 0.0) is a hardened alternative — the normalized generation
-  must *equal* the expected answer — provided for RL runs that want an unspammable
-  target: flip weights from config, no code change
+- Upstream leaves ``answer_intermediate`` empty on every semi-synthetic test row and so
+  never reports a first-hop or valid-CoT signal for these files. This port joins the
+  bridge entity from each domain's ``train/first_hop.jsonl`` by the invented person's
+  name and applies the paper's first-hop and valid-CoT rules against it:
+  ``first_hop_mentioned`` uses the same substring rule as ``correct``; ``valid_cot``
+  additionally requires the bridge entity to appear **before** the final answer. A row
+  whose person cannot be joined keeps ``intermediate=None`` and both report n/a (-1.0)
+  rather than guessing.
+- ``correct`` is the only weighted reward. The substring rule is gameable by answer spam
+  ("Europe Asia Africa..."); fidelity wins, so it stays — but
+- ``strict_answer`` (weight 0.0) is a hardened alternative: runs of whitespace and ``.,!``
+  in the generation collapse to one space, the result is lowercased and must equal the
+  raw lowercased gold. The gold is not normalised, so the one punctuated nocot gold
+  (parks/state ``U.S. Virgin Islands``) cannot score 1.0; kept as-is so the measured run
+  stays reproducible. RL runs flip the weights from config, no code change
   (``--env.taskset.task.rewards`` re-weighting).
 - ``answer_spam`` is a metric counting how many *other* rows' answers for the same
-  relation appear in the generation — the tell that the substring rule is being farmed.
-
-First-hop references are joined from each domain's ``train/first_hop.jsonl`` by the
-invented person's name (test rows leave ``answer_intermediate`` empty); a row whose
-person cannot be joined keeps ``intermediate=None`` and first-hop signals report n/a
-(-1.0) rather than guessing.
+  relation appear in the generation, matched on token boundaries — the tell that the
+  substring rule is being farmed.
+- ``answered`` is a metric separating an empty reply from a wrong one.
 """
 
 import json
+import logging
+import os
 import re
 import tempfile
 from pathlib import Path
@@ -48,10 +66,11 @@ from typing import Literal
 import requests
 import verifiers.v1 as vf
 
+log = logging.getLogger(__name__)
+
 REPO = "mbalesni/synthetic-two-hop"
 PIN_SHA = "7e15bd1ba92f737f1d1bebc3b1ce4c458158c7ec"
 RAW = f"https://raw.githubusercontent.com/{REPO}/{PIN_SHA}/datasets/semi_synthetic"
-BENCHMARK_SLICE = 60
 
 Condition = Literal["cot", "nocot", "nocot_shuffled"]
 
@@ -78,9 +97,9 @@ CATALOGUE: dict[str, list[str]] = {
     "world_heritage_sites": ["city", "continent", "country", "year_inscribed"],
 }
 
-# The 18 domains use exactly three first-hop templates (verified against the pinned
-# commit): "What is <NAME>'s favorite …?", "Which/What <thing> does <NAME> work at?",
-# and "Which video game console does <NAME> own?".
+# Upstream first_hop.jsonl questions use exactly these three templates:
+# "What is <NAME>'s favorite …?", "Which/What <thing> does <NAME> work at?", and
+# "Which video game console does <NAME> own?".
 _NAME_PATTERNS = (
     re.compile(r"^What is (.+?)'s favorite ", re.IGNORECASE),
     re.compile(r" does (.+?) work at\?", re.IGNORECASE),
@@ -95,12 +114,15 @@ def _cache_dir() -> Path:
 
 
 def fetch_jsonl(rel_path: str) -> list[dict]:
-    """Fetch one upstream JSONL (pinned SHA), with an on-disk cache. Injectable in tests."""
+    """Fetch one upstream JSONL (pinned SHA), with an on-disk cache written atomically."""
     cached = _cache_dir() / rel_path.replace("/", "__")
     if not cached.exists():
+        log.info("fetching %s/%s", RAW, rel_path)
         r = requests.get(f"{RAW}/{rel_path}", timeout=60)
         r.raise_for_status()
-        cached.write_bytes(r.content)
+        partial = cached.with_name(f"{cached.name}.{os.getpid()}.tmp")
+        partial.write_bytes(r.content)
+        os.replace(partial, cached)
     return [json.loads(line) for line in cached.read_text().splitlines() if line.strip()]
 
 
@@ -143,35 +165,41 @@ class TwoHopTask(vf.Task[TwoHopData, vf.State, TwoHopTaskConfig]):
     @vf.reward(weight=1.0)
     async def correct(self, trace: vf.Trace) -> float:
         """Upstream `grade()`: expected answer appears case-insensitively in the generation."""
-        return float(self._contains(self.data.answer, trace.last_reply or ""))
+        return float(self._contains(self.data.answer, trace.last_reply))
 
     @vf.reward(weight=0.0)
     async def strict_answer(self, trace: vf.Trace) -> float:
         """Hardened alternative (OFF by default): normalized equality, unspammable.
 
-        Not upstream semantics — provided so an RL run can flip reward weights from
-        config without touching benchmark code.
+        Runs of whitespace and `.,!` in the generation collapse to one space, the result
+        is lowercased and must equal the raw lowercased gold. The gold is not normalised,
+        so a punctuated gold (parks/state "U.S. Virgin Islands") cannot score 1.0; kept
+        as-is so the measured run stays reproducible. Not upstream semantics — provided
+        so an RL run can flip reward weights from config without touching benchmark code.
         """
-        generated = re.sub(r"[\s\.\,\!]+", " ", (trace.last_reply or "")).strip().lower()
+        generated = re.sub(r"[\s\.\,\!]+", " ", trace.last_reply).strip().lower()
         return float(generated == self.data.answer.strip().lower())
+
+    # ---- port-added signals (upstream reports none of these on the semi-synthetic files)
 
     @vf.metric
     async def first_hop_mentioned(self, trace: vf.Trace) -> float:
         """Bridge entity named anywhere in the generation (-1.0 when unjoinable).
 
-        In the nocot conditions this is the interesting negative space: latent two-hop
-        success is `correct` WITHOUT the bridge entity appearing.
+        In the nocot conditions this is the interesting negative space: for a model that
+        knows the first-hop facts, latent two-hop success is `correct` WITHOUT the bridge
+        entity appearing.
         """
         if not self.data.intermediate:
             return -1.0
-        return float(self._contains(self.data.intermediate, trace.last_reply or ""))
+        return float(self._contains(self.data.intermediate, trace.last_reply))
 
     @vf.metric
     async def valid_cot(self, trace: vf.Trace) -> float:
         """Upstream rule: correct AND first-hop named AND bridge appears BEFORE the answer."""
         if not self.data.intermediate:
             return -1.0
-        text = (trace.last_reply or "").lower()
+        text = trace.last_reply.lower()
         answer, bridge = self.data.answer.lower(), self.data.intermediate.lower()
         if answer not in text or bridge not in text:
             return 0.0
@@ -182,11 +210,17 @@ class TwoHopTask(vf.Task[TwoHopData, vf.State, TwoHopTaskConfig]):
         """How many OTHER rows' answers for this relation appear in the generation.
 
         The substring reward is farmable by enumerating candidates; a nonzero value here
-        while `correct` pays is that exploit happening.
+        while `correct` pays is that exploit happening. Matches are on token boundaries,
+        so a pool answer that is a substring of the gold ("8" inside "18") is not counted.
         """
-        text = (trace.last_reply or "").lower()
+        text = trace.last_reply.lower()
         others = [a for a in self.data.relation_answers if a.lower() != self.data.answer.lower()]
-        return float(sum(1 for a in others if a.lower() in text))
+        return float(sum(1 for a in others if re.search(rf"(?<!\w){re.escape(a.lower())}(?!\w)", text)))
+
+    @vf.metric
+    async def answered(self, trace: vf.Trace) -> float:
+        """1.0 when the reply is non-empty; separates no answer from a wrong one."""
+        return float(bool(trace.last_reply))
 
     async def validate(self, runtime: vf.Runtime) -> bool:
         d = self.data
@@ -230,28 +264,29 @@ class TwoHopLatentTaskset(vf.Taskset[TwoHopTask, TwoHopConfig]):
                 for row in rows:
                     system, user = _split_messages(row)
                     intermediate = row.get("answer_intermediate") or _join_first_hop(user, hop_map)
-                    tasks.append(TwoHopTask(
-                        TwoHopData(
-                            idx=idx,
-                            prompt=user,
-                            system_prompt=system,
-                            domain=domain,
-                            relation=relation,
-                            condition=c.condition,
-                            answer=str(row["answer"]),
-                            intermediate=intermediate,
-                            relation_answers=answers,
-                        ),
-                        c.task,
-                    ))
+                    tasks.append(
+                        TwoHopTask(
+                            TwoHopData(
+                                idx=idx,
+                                prompt=user,
+                                system_prompt=system,
+                                domain=domain,
+                                relation=relation,
+                                condition=c.condition,
+                                answer=str(row["answer"]),
+                                intermediate=intermediate,
+                                relation_answers=answers,
+                            ),
+                            c.task,
+                        )
+                    )
                     idx += 1
         return tasks
 
 
 def _split_messages(row: dict) -> tuple[str | None, str]:
     system = next((m["content"] for m in row.get("messages", []) if m.get("role") == "system"), None)
-    user = next((m["content"] for m in row.get("messages", []) if m.get("role") == "user"),
-                row.get("question", ""))
+    user = next((m["content"] for m in row.get("messages", []) if m.get("role") == "user"), row.get("question", ""))
     return system, user
 
 

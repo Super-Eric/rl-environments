@@ -30,6 +30,7 @@ the finished ledger by `rules.audit`, which reads the same rows the model reads.
 `rules.py`.
 """
 
+import itertools
 import json
 import random
 import re
@@ -41,6 +42,11 @@ import verifiers.v1 as vf
 
 from au_bas_reconciliation_v1.rules import (
     ALL_FAULTS,
+    FAULT_DUPLICATE_INVOICE,
+    FAULT_GST_MISCALCULATED,
+    FAULT_GST_ON_GST_FREE,
+    FAULT_MISSING_ABN,
+    FAULT_OUTSIDE_PERIOD,
     GST_FREE_CATEGORIES,
     INPUT_TAXED_CATEGORIES,
     ITC_INVOICE_THRESHOLD,
@@ -77,7 +83,7 @@ def _parse_answer(reply: str | None) -> dict | None:
         body = fenced.group(1).strip()
     try:
         parsed = json.loads(body)
-    except (json.JSONDecodeError, ValueError):
+    except ValueError:
         return None
     return parsed if isinstance(parsed, dict) else None
 
@@ -225,10 +231,12 @@ class AuBasReconciliationTaskset(vf.Taskset[BasTask, BasConfig]):
 
     def load(self) -> Iterator[BasTask]:
         c = self.config
-        assert c.num_transactions >= 4, "a ledger needs at least 4 rows"
-        assert 0.0 <= c.fault_rate <= 1.0, "fault_rate must be a probability"
+        if c.num_transactions < 4:
+            raise ValueError("a ledger needs at least 4 rows")
+        if not 0.0 <= c.fault_rate <= 1.0:
+            raise ValueError("fault_rate must be a probability")
         rng = random.Random(c.seed)
-        for idx in range(10**9):
+        for idx in itertools.count():
             yield BasTask(self._build(idx, rng), c.task)
 
     def _build(self, idx: int, rng: random.Random) -> BasData:
@@ -242,20 +250,26 @@ class AuBasReconciliationTaskset(vf.Taskset[BasTask, BasConfig]):
         ledger: list[dict] = []
         for i in range(c.num_transactions):
             direction = "sale" if rng.random() < 0.45 else "purchase"
-            category = rng.choice(ALL_CATEGORIES if direction == "purchase" else TAXABLE_CATEGORIES + sorted(GST_FREE_CATEGORIES))
+            category = rng.choice(
+                ALL_CATEGORIES if direction == "purchase" else TAXABLE_CATEGORIES + sorted(GST_FREE_CATEGORIES)
+            )
             amount = money(rng.uniform(20, 4000))
             narration = rng.choice(SALE_NARRATIONS if direction == "sale" else PURCHASE_NARRATIONS)
-            ledger.append({
-                "id": f"TXN-{i + 1:03d}",
-                "date": (q_start + timedelta(days=rng.randint(0, span))).isoformat(),
-                "invoice_no": f"INV-{rng.randint(10000, 99999)}",
-                "direction": direction,
-                "narration": narration,
-                "category": category,
-                "amount": str(amount),
-                "gst": str(correct_gst(amount, category)),
-                "supplier_abn": None if direction == "sale" else f"{rng.randint(10, 99)} {rng.randint(100, 999)} {rng.randint(100, 999)} {rng.randint(100, 999)}",
-            })
+            ledger.append(
+                {
+                    "id": f"TXN-{i + 1:03d}",
+                    "date": (q_start + timedelta(days=rng.randint(0, span))).isoformat(),
+                    "invoice_no": f"INV-{rng.randint(10000, 99999)}",
+                    "direction": direction,
+                    "narration": narration,
+                    "category": category,
+                    "amount": str(amount),
+                    "gst": str(correct_gst(amount, category)),
+                    "supplier_abn": None
+                    if direction == "sale"
+                    else f"{rng.randint(10, 99)} {rng.randint(100, 999)} {rng.randint(100, 999)} {rng.randint(100, 999)}",
+                }
+            )
 
         self._inject_faults(ledger, rng, q_start, q_end)
         key = audit(ledger, q_start.isoformat(), q_end.isoformat())
@@ -272,29 +286,29 @@ class AuBasReconciliationTaskset(vf.Taskset[BasTask, BasConfig]):
     def _inject_faults(self, ledger, rng, q_start, q_end) -> None:
         """Corrupt a sample of rows. Each fault mirrors a real bookkeeping mistake."""
         rate = self.config.fault_rate
-        # `fault_rate = 0.0` must yield a genuinely clean ledger: a quarter with nothing
-        # wrong is the case that tests whether a model invents findings under pressure to
-        # produce some, and it is unreachable if generation always injects at least one.
+        # `fault_rate = 0.0` injects nothing; a ledger with no faults is the case that tests
+        # whether a model invents findings under pressure to produce some, and it is
+        # unreachable if generation always injects at least one.
         n_faults = 0 if rate == 0.0 else max(1, round(len(ledger) * rate))
         for txn in rng.sample(ledger, min(n_faults, len(ledger))):
             zero_rated = txn["category"] in GST_FREE_CATEGORIES or txn["category"] in INPUT_TAXED_CATEGORIES
-            choices = [f for f in ALL_FAULTS if f != ("gst_miscalculated" if zero_rated else "gst_on_gst_free")]
+            choices = [f for f in ALL_FAULTS if f != (FAULT_GST_MISCALCULATED if zero_rated else FAULT_GST_ON_GST_FREE)]
             fault = rng.choice(choices)
             amount = money(txn["amount"])
-            if fault == "gst_on_gst_free" and zero_rated:
+            if fault == FAULT_GST_ON_GST_FREE and zero_rated:
                 txn["gst"] = str(money(amount / Decimal("11")))
-            elif fault == "gst_miscalculated" and not zero_rated:
+            elif fault == FAULT_GST_MISCALCULATED and not zero_rated:
                 # The classic error: 10% *of the GST-inclusive price* instead of 1/11 of it.
                 txn["gst"] = str(money(amount * Decimal("0.10")))
-            elif fault == "outside_period":
+            elif fault == FAULT_OUTSIDE_PERIOD:
                 offset = timedelta(days=rng.randint(1, 25))
                 txn["date"] = ((q_start - offset) if rng.random() < 0.5 else (q_end + offset)).isoformat()
-            elif fault == "missing_abn_over_threshold":
+            elif fault == FAULT_MISSING_ABN:
                 txn["direction"], txn["supplier_abn"] = "purchase", None
                 if amount <= ITC_INVOICE_THRESHOLD:
                     txn["amount"] = str(money(rng.uniform(100, 3000)))
                     txn["gst"] = str(correct_gst(money(txn["amount"]), txn["category"]))
-            elif fault == "duplicate_invoice":
+            elif fault == FAULT_DUPLICATE_INVOICE:
                 donor = rng.choice([t for t in ledger if t["id"] != txn["id"]])
                 txn["invoice_no"] = donor["invoice_no"]
 
@@ -305,15 +319,15 @@ class AuBasReconciliationTaskset(vf.Taskset[BasTask, BasConfig]):
             f"{t['category']} | {t['amount']} | {t['gst']} | {t['supplier_abn'] or '-'} |"
             for t in ledger
         )
-        return f"""You are reconciling an Australian business's GST ledger for the BAS quarter \
-{q_start.isoformat()} to {q_end.isoformat()}. All amounts are in AUD and GST-inclusive.
+        return f"""Reconcile the Australian GST ledger below for the BAS quarter {q_start.isoformat()} to \
+{q_end.isoformat()}. All amounts are in AUD and GST-inclusive.
 
 {header}
 |---|---|---|---|---|---|---|---|---|
 {rows}
 
-The ledger contains bookkeeping faults. Identify every fault, then report the **corrected** \
-BAS figures — that is, the figures after excluding or correcting the faulty entries.
+The ledger may contain bookkeeping faults. Identify every fault (there may be none), then report the \
+**corrected** BAS figures — that is, the figures after excluding or correcting the faulty entries.
 
 Fault codes:
 - `gst_on_gst_free` — GST charged on a GST-free or input-taxed supply
@@ -324,20 +338,19 @@ Fault codes:
 input tax credit cannot be claimed
 
 Rules: GST is 10%, so GST inside a GST-inclusive amount is `amount / 11` rounded to the nearest cent. \
-GST-free categories are {', '.join(sorted(GST_FREE_CATEGORIES))}. Input-taxed categories are \
-{', '.join(sorted(INPUT_TAXED_CATEGORIES))} and give no input tax credit. Out-of-period and duplicate \
+GST-free categories are {", ".join(sorted(GST_FREE_CATEGORIES))}. Input-taxed categories are \
+{", ".join(sorted(INPUT_TAXED_CATEGORIES))} and give no input tax credit. Out-of-period and duplicate \
 entries are excluded from the BAS entirely. A purchase missing its ABN over the threshold still \
 appears in the ledger but its GST cannot be claimed at 1B.
 
 Report: G1 (total sales, GST-inclusive), 1A (GST on sales), 1B (GST on purchases), \
 net (1A minus 1B; negative means a refund).
 
-Reply with only a JSON object inside <answer></answer> tags, in exactly this shape:
+Put your final answer as a JSON object inside <answer></answer> tags, in this shape:
 
 <answer>
 {{"G1": "0.00", "1A": "0.00", "1B": "0.00", "net": "0.00",
   "faults": {{"TXN-001": ["outside_period"], "TXN-007": ["gst_miscalculated", "duplicate_invoice"]}}}}
 </answer>
 
-Use a decimal string with two places for every figure. Include every faulty transaction, and only \
-faulty transactions, in `faults`."""
+Include every faulty transaction, and only faulty transactions, in `faults`."""

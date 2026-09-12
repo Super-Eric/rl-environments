@@ -2,6 +2,16 @@
 
 Research current as of **August 2026**. Every claim below links to its source.
 
+> **Status update (2026-09-12).** The Prime Intellect bounty programme this playbook
+> routes through is **closed**: its task sheet now reads *"This bounty program is closed
+> and is not accepting new applications or bounty claims"* for all three tiers (Open
+> Access, Application-Only, Call for Partners), and `PrimeIntellect-ai/community-environments`
+> — the PR route whose merge hook paid out — has ~200 open PRs and no merges since
+> March 2026. What remains open, and is what §5 Phase 1 actually needs: publishing to the
+> Environments Hub (`prime env push`) and attaching measured evals to a published
+> environment (a v1 `eval` run with `push = true`). The analysis below is left as
+> written; only §6 is revised.
+
 ---
 
 ## 1. Why this market exists
@@ -184,15 +194,20 @@ organisations already budgeting for exactly this.
 
 ## 6. Do this next
 
-1. `prime login`, then run a real eval on one environment here with a model key so the
-   repo carries measured numbers rather than only structural claims.
-2. Open the [bounty sheet](https://docs.google.com/spreadsheets/d/13UDfRDjgIZXsMI2s9-Lmn8KSMMsgk2_zsfju6cx_pNU/edit),
-   claim two Open Access tasks.
-3. `prime env push` the two environments that need no container, publicly.
-4. Submit the [Application-Only form](https://form.typeform.com/to/jLfT7v7o) citing the
-   published environments.
+*(Revised 2026-09-12 — the bounty sheet and application form are closed; see the status
+note at the top.)*
 
----
+1. `prime login`, then run a real eval on every container-free environment here so the
+   repo carries measured numbers rather than only structural claims — **done 2026-09-11**
+   (see the root README's verification table).
+2. Choose a Prime username (it is permanent and public; `prime env push` prompts for it)
+   and `prime env push` all six environments, publicly.
+3. Attach the measured runs to the published environments: re-enter each finished run
+   with `uv run eval @ outputs/<run>/configs/resolved/eval.json --resume` — a complete run
+   re-runs nothing and uploads via the config's `push = true`.
+4. Lead with the Hub pages and eval curves when approaching the employers in §5 Phase 3a;
+   watch the [Prime Intellect blog](https://www.primeintellect.ai/blog) for a reopened
+   programme rather than the closed sheet.
 
 ## Sources
 

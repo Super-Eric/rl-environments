@@ -12,3 +12,14 @@ build/
 
 # private automation tool — its own nested repo (github.com/afzal0/scout)
 scout/
+
+# company ventures — private repos of their own
+afk/
+
+# macOS resource forks (exFAT volumes)
+._*
+.DS_Store
+
+# browser-automation session dumps and screenshots of private tooling
+.playwright-mcp/
+scout-ui.png

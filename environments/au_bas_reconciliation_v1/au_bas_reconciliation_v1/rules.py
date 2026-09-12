@@ -17,6 +17,9 @@ Rules implemented (Australian GST, as administered by the ATO):
 - Only documents dated inside the reporting quarter belong on that quarter's BAS.
 - A re-issued invoice number is a duplicate; the later occurrence is not counted again.
 
+The statutory source for each rule, and the simplifications this environment makes on top
+of them, are listed under "Sources" in the package README.
+
 BAS labels: G1 total sales (GST-inclusive), 1A GST on sales, 1B GST on purchases,
 net = 1A - 1B (positive = payable to the ATO, negative = refund).
 """
@@ -99,11 +102,7 @@ def audit(ledger: list[dict], period_start: str, period_end: str) -> dict:
             zero_rated = category in GST_FREE_CATEGORIES or category in INPUT_TAXED_CATEGORIES
             flag(tid, FAULT_GST_ON_GST_FREE if zero_rated else FAULT_GST_MISCALCULATED)
 
-        missing_abn = (
-            txn["direction"] == "purchase"
-            and amount > ITC_INVOICE_THRESHOLD
-            and not txn.get("supplier_abn")
-        )
+        missing_abn = txn["direction"] == "purchase" and amount > ITC_INVOICE_THRESHOLD and not txn.get("supplier_abn")
         if missing_abn:
             flag(tid, FAULT_MISSING_ABN)
 

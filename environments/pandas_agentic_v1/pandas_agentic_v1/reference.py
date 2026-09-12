@@ -2,8 +2,7 @@
 
 The agent solves every task *with* pandas; the grader must not share its conventions
 (NaN propagation, dtype coercion, merge suffixes, groupby dropna) or the environment
-stops testing whether the agent handled them. Same grader/solver-separation rule as
-sci-pipeline-v1, which this package generalises.
+stops testing whether the agent handled them.
 
 Every function here is the answer key for one task family, computed from the same raw
 rows the agent's input files are generated from.
@@ -46,8 +45,9 @@ def repair_and_typecast(rows: list[dict], spec: dict) -> list[dict]:
 
 
 def group_aggregate(rows: list[dict], by: str, value: str) -> dict:
-    """Family 2 (reconcile): per-group count / sum / mean over non-null values,
-    with half-up rounding applied once, at the end."""
+    """Family 2 (reconcile): per-group count / sum / mean over non-null values, with
+    half-up rounding applied once, at the end. A group whose values are all null is
+    still reported: count 0, sum 0.0, mean None."""
     groups: dict[str, list[float]] = defaultdict(list)
     nulls: dict[str, int] = defaultdict(int)
     for row in rows:
@@ -58,15 +58,16 @@ def group_aggregate(rows: list[dict], by: str, value: str) -> dict:
             nulls[group] += 1
             continue
         groups[group].append(row[value])
-    return {
-        group: {
+    out: dict = {}
+    for group in sorted(set(groups) | set(nulls)):
+        vals = groups.get(group, [])
+        out[group] = {
             "count": len(vals),
             "nulls": nulls.get(group, 0),
             "sum": _round2(sum(vals)),
             "mean": _round2(sum(vals) / len(vals)) if vals else None,
         }
-        for group, vals in sorted(groups.items())
-    }
+    return out
 
 
 def left_join_unmatched(left: list[dict], right: list[dict], on: str) -> dict:

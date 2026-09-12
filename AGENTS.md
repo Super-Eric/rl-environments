@@ -62,3 +62,21 @@ the root project dependencies.
 
 `prime env push <name> --visibility PRIVATE|PUBLIC` is an external state change. Ask
 before running it; local green is not consent to publish.
+
+## Operational notes
+
+- The checked-in `configs/*.toml` are the documented "correct way to run" each environment:
+  tool-less tasksets pin `[env.agent.runtime] type = "subprocess"` (the framework default,
+  `prime`, provisions one sandbox VM per rollout even for the `null` harness) and every
+  config carries an `[env.timeout] episode` bound so a provider retry loop cannot hang a run.
+- Any `NEEDS_CONTAINER = True` task sets `image` explicitly and its README says which
+  libraries the sandbox provides. The framework default image is `python:3.11-slim` and
+  ships nothing beyond the standard library.
+- `validate()` must re-derive the answer key from the row's own inputs and assert
+  agreement — checking that the domain is well-behaved is not enough.
+- If `uv run pytest` / `uv run validate` fail with `ModuleNotFoundError: verifiers` (seen
+  on exFAT volumes, where the console-script shims break), use the module forms:
+  `uv run python -m pytest tests/ -q` and
+  `uv run python -c "from verifiers.v1.cli.validate import main; import sys; sys.argv=['validate', '<id>', '-n', '40', '--runtime.type', 'subprocess']; main()"`.
+- Measured eval numbers cited in any README come from a real run recorded in the root
+  README's verification table; never quote a number that table cannot back.

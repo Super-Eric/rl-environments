@@ -1,5 +1,6 @@
 # Harbor-backed. Validate with `uv run eval @ configs/terminal-bench-2.toml --dry-run`
-# before a real run — it checks the config without provisioning sandboxes.
+# before a real run — it checks the config without provisioning sandboxes. Needs the
+# Harbor CLI: `uv pip install -e "environments/terminal_agentic_v1[harbor]"`.
 model = "anthropic/claude-sonnet-5"
 num_tasks = 5
 
@@ -12,3 +13,7 @@ id = "claude-code"
 
 [env.agent.runtime]
 type = "docker"
+
+# Bound each rollout so a provider retry loop cannot hang the run.
+[env.timeout]
+episode = 1800

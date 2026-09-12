@@ -18,7 +18,7 @@ import pytest
 import verifiers.v1 as vf
 from conftest import make_trace
 from sci_pipeline_v1.reference import SENTINEL, reduce_readings
-from sci_pipeline_v1.taskset import SciConfig, SciPipelineTaskset
+from sci_pipeline_v1.taskset import WORKDIR, SciConfig, SciData, SciPipelineTaskset, SciTask, SciTaskConfig
 
 
 def _head(taskset, n):
@@ -36,6 +36,18 @@ def rows_of(task):
     return list(csv.DictReader(io.StringIO(task.data.csv_text)))
 
 
+def task_from_rows(rows):
+    """A task whose CSV is exactly `rows`, keyed the way the generator keys it."""
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=["timestamp", "station", "value", "unit"], lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    data = SciData(
+        idx=0, workdir=WORKDIR, prompt="", csv_text=buf.getvalue(), expected=reduce_readings(rows), station="X"
+    )
+    return SciTask(data, SciTaskConfig())
+
+
 async def score_submission(task, submission) -> object:
     """Score as if the agent had left `submission` in result.json (None = no file)."""
     trace = make_trace(task, "done")
@@ -47,12 +59,13 @@ async def score_submission(task, submission) -> object:
 
 # --------------------------------------------------------------------------- reference
 
+
 def test_reference_matches_a_hand_computed_example():
     """Worked by hand: dedup keeps the first row, sentinel is excluded, F converts."""
     rows = [
         {"timestamp": "2025-01-01T00:00:00", "station": "X", "value": "10.0", "unit": "C"},
-        {"timestamp": "2025-01-01T01:00:00", "station": "X", "value": "50.0", "unit": "F"},   # -> 10.0 C
-        {"timestamp": "2025-01-01T00:00:00", "station": "X", "value": "99.0", "unit": "C"},   # dup, ignored
+        {"timestamp": "2025-01-01T01:00:00", "station": "X", "value": "50.0", "unit": "F"},  # -> 10.0 C
+        {"timestamp": "2025-01-01T00:00:00", "station": "X", "value": "99.0", "unit": "C"},  # dup, ignored
         {"timestamp": "2025-01-01T02:00:00", "station": "X", "value": str(SENTINEL), "unit": "C"},
         {"timestamp": "2025-01-02T00:00:00", "station": "X", "value": "20.0", "unit": "C"},
         {"timestamp": "2025-01-02T01:00:00", "station": "X", "value": "21.0", "unit": "C"},
@@ -85,6 +98,7 @@ def test_sentinel_is_missing_in_any_unit():
 
 
 # ------------------------------------------------------------------------------ rewards
+
 
 async def test_gold_submission_scores_one():
     for task in tasks(6):
@@ -151,11 +165,56 @@ async def test_tolerance_is_enforced():
     assert (await score_submission(task, outside)).rewards["daily_means"].score == 0.0
 
 
+async def test_extremes_reject_wrong_or_non_numeric_values():
+    """A plausible-magnitude extreme, a non-number, NaN, or swapped extremes must all pay nothing."""
+    task = tasks(1)[0]
+    exp = task.data.expected
+    assert (await score_submission(task, exp)).rewards["extremes"].score == 1.0
+    cheats = {
+        "off by half a degree": {**exp, "max_c": exp["max_c"] + 0.5},
+        "non-numeric": {**exp, "max_c": "hot"},
+        "nan": {**exp, "max_c": float("nan")},
+        "swapped": {**exp, "max_c": exp["min_c"], "min_c": exp["max_c"]},
+    }
+    for label, cheat in cheats.items():
+        trace = await score_submission(task, cheat)
+        assert trace.rewards["extremes"].score == 0.0, label
+        assert trace.rewards["daily_means"].score == 1.0 and trace.rewards["record_counts"].score == 1.0, label
+
+
+async def test_extra_days_do_not_pass_daily_means():
+    """A superset of dates fails the means outright, while `day_coverage` still reads 1.0."""
+    task = tasks(1)[0]
+    exp = task.data.expected
+    padded = {**exp, "daily_mean_c": {**exp["daily_mean_c"], "1999-12-31": 0.0}}
+    trace = await score_submission(task, padded)
+    assert trace.rewards["daily_means"].score == 0.0
+    assert trace.metrics["day_coverage"] == 1.0
+
+
 # ------------------------------------------------------------------------- generation
+
 
 async def test_key_is_reproducible_from_the_shipped_csv():
     for task in tasks(10):
         assert reduce_readings(rows_of(task)) == task.data.expected
+
+
+async def test_generated_tasks_validate():
+    """`validate` re-derives the key from the shipped CSV and needs no runtime to do it."""
+    for task in tasks(10):
+        assert await task.validate(None) is True
+
+
+async def test_validate_rejects_a_date_with_no_valid_reading():
+    """A date whose readings are all sentinels has no mean, so the prompt's promise cannot be graded."""
+    rows = [
+        {"timestamp": "2025-01-01T00:00:00", "station": "X", "value": "10.0", "unit": "C"},
+        {"timestamp": "2025-01-02T00:00:00", "station": "X", "value": str(SENTINEL), "unit": "C"},
+    ]
+    assert "2025-01-02" not in reduce_readings(rows)["daily_mean_c"]
+    with pytest.raises(AssertionError, match="no valid reading"):
+        await task_from_rows(rows).validate(None)
 
 
 async def test_generated_csv_actually_contains_every_defect():
@@ -170,10 +229,7 @@ async def test_generated_csv_actually_contains_every_defect():
 
 async def test_rows_are_shuffled_so_first_in_file_differs_from_earliest():
     """The dedup rule is only meaningful if file order is not time order."""
-    assert any(
-        [r["timestamp"] for r in rows_of(t)] != sorted(r["timestamp"] for r in rows_of(t))
-        for t in tasks(5)
-    )
+    assert any([r["timestamp"] for r in rows_of(t)] != sorted(r["timestamp"] for r in rows_of(t)) for t in tasks(5))
 
 
 async def test_tasks_are_distinct_and_reproducible():
@@ -185,6 +241,7 @@ async def test_tasks_are_distinct_and_reproducible():
 
 
 # ------------------------------------------------------ broken pipelines used as fixtures
+
 
 def _naive_keep_sentinel(rows):
     """Deduplicates and converts units, but averages the -999.0 sentinel in."""
@@ -242,6 +299,7 @@ def _pack(per_day, vals, n_valid, n_missing):
 
 # ------------------------------------------------------- runtime I/O (no container)
 
+
 async def test_setup_and_finalize_round_trip_through_a_real_runtime(tmp_path):
     """Exercise the real runtime I/O path: `setup` writes the CSV, `finalize` reads the artifact.
 
@@ -296,5 +354,5 @@ async def test_setup_and_finalize_round_trip_through_a_real_runtime(tmp_path):
         await task.finalize(trace, runtime)
         assert "is not valid JSON" in trace.info["submission_error"]
     finally:
-        runtime.cleanup()   # sync, unlike start/stop/read/write
+        runtime.cleanup()  # sync, unlike start/stop/read/write
         await runtime.stop()

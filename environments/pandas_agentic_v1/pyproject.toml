@@ -1,10 +1,11 @@
 [project]
 name = "pandas-agentic-v1"
 version = "0.1.0"
-description = "pandas-agentic-v1 — sandboxed agentic pandas tasks (repair, reconcile, reshape) graded on the artifact the agent writes, verified by a pandas-free reference."
+description = "Clean, reconcile and merge-audit messy order exports with pandas inside a sandbox; graded only on the file the agent writes."
+license = "MIT"
 requires-python = ">=3.11"
 dependencies = ["verifiers>=0.3.1"]
-tags = ["v1", "multi-turn", "agentic", "sandbox", "tool-use", "data-engineering", "pandas", "deterministic-reward"]
+tags = ["v1", "multi-turn", "agentic", "sandbox", "tool-use", "data-engineering", "pandas", "deterministic-reward", "eval", "train"]
 
 [build-system]
 requires = ["hatchling"]

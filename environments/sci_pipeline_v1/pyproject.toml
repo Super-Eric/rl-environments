@@ -1,10 +1,11 @@
 [project]
 name = "sci-pipeline-v1"
 version = "0.1.0"
-description = "sci-pipeline-v1 — clean and aggregate a messy sensor time series in a sandbox; graded on the artifact the agent writes, not on what it says."
+description = "Clean and aggregate a messy hourly sensor CSV inside a sandbox; graded only on the result.json the agent writes."
+license = "MIT"
 requires-python = ">=3.11"
 dependencies = ["verifiers>=0.3.1"]
-tags = ["v1", "multi-turn", "agentic", "sandbox", "tool-use", "data-engineering", "science", "deterministic-reward"]
+tags = ["v1", "multi-turn", "agentic", "sandbox", "tool-use", "data-engineering", "science", "deterministic-reward", "eval", "train"]
 
 [build-system]
 requires = ["hatchling"]

@@ -1,10 +1,11 @@
 [project]
 name = "au-bas-reconciliation-v1"
 version = "0.1.0"
-description = "au-bas-reconciliation-v1 — reconcile a synthetic Australian GST ledger to a corrected BAS, finding injected compliance faults."
+description = "Reconcile a synthetic Australian GST ledger to a corrected BAS, finding its bookkeeping faults along the way."
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = ["verifiers>=0.3.1"]
-tags = ["v1", "single-turn", "finance", "accounting", "compliance", "procedural", "deterministic-reward", "long-context"]
+tags = ["v1", "train", "eval", "single-turn", "finance", "accounting", "compliance", "procedural", "deterministic-reward"]
 
 [build-system]
 requires = ["hatchling"]

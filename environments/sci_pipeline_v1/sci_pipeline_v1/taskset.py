@@ -20,8 +20,10 @@ The CSV carries four defects, each of which silently corrupts a naive aggregatio
 
 Reward is split three ways so a partially working pipeline is diagnosable: getting the
 counts right while the means are wrong points at aggregation, the reverse points at
-parsing. Each component is exact — a data pipeline that is approximately right about how
-many records it processed is not right.
+parsing. Each component is binary. Counts must match exactly — a data pipeline that is
+approximately right about how many records it processed is not right — and temperatures
+must land within `tolerance_c` (0.01 °C by default, one unit in the last required decimal
+place) of the reference.
 """
 
 import csv
@@ -80,7 +82,7 @@ class SciTask(vf.Task[SciData, vf.State, SciTaskConfig]):
         """
         try:
             raw = await runtime.read(f"{self.workdir}/{OUTPUT_NAME}", max_bytes=2_000_000)
-        except Exception as exc:  # noqa: BLE001 - a missing artifact is a normal outcome, not a crash
+        except Exception as exc:  # a missing artifact is a normal outcome, not a crash
             trace.info["submission_error"] = f"could not read {OUTPUT_NAME}: {exc}"
             return
         try:
@@ -154,6 +156,10 @@ class SciTask(vf.Task[SciData, vf.State, SciTaskConfig]):
         rows = list(csv.DictReader(io.StringIO(self.data.csv_text)))
         assert reduce_readings(rows) == self.data.expected, f"key drift on idx={self.data.idx}"
         assert self.data.expected["n_valid"] > 0, "a task with no valid readings is ungradeable"
+        # A date whose readings are all sentinels has no mean, and the prompt promises one per date.
+        assert {row["timestamp"][:10] for row in rows} == set(self.data.expected["daily_mean_c"]), (
+            f"a date with no valid reading on idx={self.data.idx}"
+        )
         return True
 
 
@@ -198,8 +204,9 @@ class SciPipelineTaskset(vf.Taskset[SciTask, SciConfig]):
                 if rng.random() < c.missing_rate:
                     rows.append({"timestamp": ts, "station": station, "value": f"{SENTINEL}", "unit": "C"})
                 elif rng.random() < c.fahrenheit_rate:
-                    rows.append({"timestamp": ts, "station": station,
-                                 "value": f"{celsius * 9.0 / 5.0 + 32.0:.4f}", "unit": "F"})
+                    rows.append(
+                        {"timestamp": ts, "station": station, "value": f"{celsius * 9.0 / 5.0 + 32.0:.4f}", "unit": "F"}
+                    )
                 else:
                     rows.append({"timestamp": ts, "station": station, "value": f"{celsius:.4f}", "unit": "C"})
 
@@ -207,7 +214,9 @@ class SciPipelineTaskset(vf.Taskset[SciTask, SciConfig]):
         # "first in file order" genuinely differs from "earliest timestamp".
         for src in rng.sample(rows, max(1, int(len(rows) * c.duplicate_rate))):
             clone = dict(src)
-            clone["value"] = f"{float(src['value']) + rng.uniform(-2, 2):.4f}" if float(src["value"]) != SENTINEL else f"{SENTINEL}"
+            clone["value"] = (
+                f"{float(src['value']) + rng.uniform(-2, 2):.4f}" if float(src["value"]) != SENTINEL else f"{SENTINEL}"
+            )
             rows.append(clone)
         rng.shuffle(rows)
 
@@ -230,7 +239,7 @@ class SciPipelineTaskset(vf.Taskset[SciTask, SciConfig]):
         return f"""`{WORKDIR}/{INPUT_NAME}` is an hourly export from weather station {station}, with \
 columns `timestamp`, `station`, `value`, `unit`. The export is not clean.
 
-Process it in exactly this order:
+The result is defined by these rules:
 
 1. **Deduplicate on `timestamp`, keeping the first row for each timestamp in file order.** \
 Rows are not sorted by time, so "first" means first in the file, not earliest.

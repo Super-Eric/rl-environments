@@ -19,18 +19,24 @@ jobs:
         run: uv sync --frozen
 
       - name: Lint
-        run: uv run ruff check .
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
 
       - name: Unit + adversarial reward tests
         run: uv run pytest tests/ -q
 
       # Model-free ground-truth checks. Every generated task is re-derived from the data
       # the model would see; a generator bug fails the build instead of shipping a wrong
-      # answer key. sci-pipeline-v1 needs a container runtime and is covered by pytest.
+      # answer key. The sandboxed tasksets validate on the runner's Docker daemon.
+      # terminal-agentic-v1 needs the Harbor CLI (see its README) and is not validated here.
       - name: Validate answer keys
         run: |
           uv run validate geo-reprojection-v1 -n 40 --runtime.type subprocess --no-rich
           uv run validate au-bas-reconciliation-v1 -n 60 --runtime.type subprocess --no-rich
+          uv run validate two-hop-latent-v1 -n 40 --runtime.type subprocess --no-rich
+          uv run validate sci-pipeline-v1 -n 10 --runtime.type docker --no-rich
+          uv run validate pandas-agentic-v1 -n 10 --runtime.type docker --no-rich
 
       - name: Check eval configs resolve
         run: |

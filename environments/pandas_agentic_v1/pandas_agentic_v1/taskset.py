@@ -1,15 +1,12 @@
-"""pandas-agentic-v1 — sandboxed agentic pandas work, graded on the artifact.
+"""pandas-agentic-v1 — sandboxed data-cleaning work, graded on the artifact the agent writes.
 
-Built for the Environments Hub "Software Library Evals" contract: sandboxed code
-execution per task, 50+ nontrivial agentic tasks against a library the author uses
-daily, suitable for prime-rl training. Three families ship now; the roadmap in
-README.md takes the catalogue to eight.
+Every task is a messy order export the agent has to clean before it can answer:
 
 - ``repair``     messy CSV (sentinels, dtype chaos, dupes) -> clean typed CSV
 - ``reconcile``  per-group aggregation with nulls counted, not averaged in
 - ``merge``      left-join audit: joined row count + unmatched keys on both sides
 
-Every family follows the house rules proven in sci-pipeline-v1:
+Rules every family follows:
 
 - **The artifact is the answer.** The agent writes ``result.json`` / ``clean.csv`` in
   the sandbox; prose scores zero.
@@ -17,8 +14,7 @@ Every family follows the house rules proven in sci-pipeline-v1:
   conventions (dtype coercion, groupby dropna, merge duplication) are what is being
   tested, not silently shared.
 - **Procedural and INFINITE** with a fixed seed catalogue: the first 60 tasks are the
-  stable "benchmark" slice (>50, per the contract); the stream continues forever for
-  training.
+  stable benchmark slice; the stream continues forever for training.
 """
 
 import csv
@@ -38,10 +34,21 @@ from pandas_agentic_v1.reference import (
 )
 
 WORKDIR = "/workspace"
+# The runtimes' default image (python:3.11-slim) ships no pandas; this one does, for amd64 and arm64.
+IMAGE = "amancevice/pandas:slim-3.0.5"
 Family = Literal["repair", "reconcile", "merge"]
 
 CATEGORIES = ["hardware", "produce", "freight", "software", "apparel", "chemicals"]
 REGIONS = ["north", "south", "east", "west", "central"]
+
+MISSING_DESC = f"Missing values appear as any of {sorted(SENTINELS - {''})} or empty cells"
+
+
+def _export_intro(path: str, columns: list[str]) -> str:
+    return (
+        f"`{path}` is a messy order export: columns {', '.join(columns)}. {MISSING_DESC}; numbers may "
+        "carry thousands separators or currency symbols; some rows are exact duplicates."
+    )
 
 
 class PandasData(vf.TaskData):
@@ -55,7 +62,9 @@ class PandasData(vf.TaskData):
 
 
 class PandasTaskConfig(vf.TaskConfig):
-    float_tolerance: float = 0.01
+    float_tolerance: float = 0.001
+    """Absolute slack on every float comparison. Kept well below 0.005 so a banker's-rounded
+    value (0.01 off) and an unrounded x.xx5 value (0.005 off) both fail regardless of float noise."""
 
 
 class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
@@ -112,7 +121,7 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
                 raw_value = (g.get(col) or "").strip()
                 want = e[col]
                 if want is None:
-                    if raw_value not in ("", *SENTINELS):
+                    if raw_value != "":
                         return 0.0
                     continue
                 try:
@@ -163,19 +172,26 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
     async def produced_output(self, trace: vf.Trace) -> float:
         return float("submission" in trace.info or "submission_csv" in trace.info)
 
-    async def validate(self, runtime: vf.Runtime) -> bool:
-        """Answer key must be re-derivable from the shipped file bodies."""
+    async def validate(self, runtime: vf.Runtime | None) -> bool:
+        """Answer key must be re-derivable from the shipped file bodies, and the sandbox
+        must import pandas — the runtimes' default image does not."""
         d = self.data
-        parse = lambda name: list(csv.DictReader(io.StringIO(d.input_files[name])))  # noqa: E731
+
+        def _rows(name: str) -> list[dict]:
+            return list(csv.DictReader(io.StringIO(d.input_files[name])))
+
         if d.family == "repair":
-            assert repair_and_typecast(parse("raw.csv"), d.spec) == d.expected["rows"]
+            assert repair_and_typecast(_rows("raw.csv"), d.spec) == d.expected["rows"]
         elif d.family == "reconcile":
-            cleaned = repair_and_typecast(parse("raw.csv"), d.spec)
+            cleaned = repair_and_typecast(_rows("raw.csv"), d.spec)
             assert group_aggregate(cleaned, d.spec["by"], d.spec["value"]) == d.expected["groups"]
         else:
-            left = repair_and_typecast(parse("left.csv"), {"columns": d.spec["left_columns"]})
-            right = repair_and_typecast(parse("right.csv"), {"columns": d.spec["right_columns"]})
+            left = repair_and_typecast(_rows("left.csv"), {"columns": d.spec["left_columns"]})
+            right = repair_and_typecast(_rows("right.csv"), {"columns": d.spec["right_columns"]})
             assert left_join_unmatched(left, right, d.spec["on"]) == d.expected
+        if runtime is not None:
+            probe = await runtime.run(["python3", "-c", "import pandas"], {})
+            assert probe.exit_code == 0, f"pandas does not import in {d.image}: {probe.stderr.strip()[-300:]}"
         return True
 
 
@@ -200,13 +216,14 @@ class PandasAgenticTaskset(vf.Taskset[PandasTask, PandasConfig]):
         rng = random.Random(c.seed)
         for idx in range(10**9):
             family: Family = c.families[idx % len(c.families)]
-            build = {"repair": self._build_repair, "reconcile": self._build_reconcile,
-                     "merge": self._build_merge}[family]
+            build = {"repair": self._build_repair, "reconcile": self._build_reconcile, "merge": self._build_merge}[
+                family
+            ]
             yield PandasTask(build(idx, rng), c.task)
 
     # ---- generation ------------------------------------------------------------
 
-    def _messy_number(self, rng, value: float, kind: str) -> str:
+    def _messy_number(self, rng: random.Random, value: float, kind: str) -> str:
         roll = rng.random()
         if roll < 0.25:
             return f"{value:,.2f}" if kind == "float" else f"{int(value):,}"
@@ -214,24 +231,27 @@ class PandasAgenticTaskset(vf.Taskset[PandasTask, PandasConfig]):
             return f"${value:.2f}"
         return f"{value:.2f}" if kind == "float" else str(int(value))
 
-    def _raw_table(self, rng, n: int) -> tuple[list[dict], dict]:
-        spec = {"columns": {"order_id": "str", "category": "str", "region": "str",
-                            "units": "int", "unit_price": "float"}}
+    def _raw_table(self, rng: random.Random, n: int) -> tuple[list[dict], dict]:
+        spec = {
+            "columns": {"order_id": "str", "category": "str", "region": "str", "units": "int", "unit_price": "float"}
+        }
         rows = []
         for i in range(n):
-            rows.append({
-                "order_id": f"ORD-{1000 + i}",
-                "category": rng.choice(CATEGORIES),
-                "region": rng.choice(REGIONS),
-                "units": self._messy_number(rng, rng.randint(1, 8000), "int"),
-                "unit_price": self._messy_number(rng, rng.uniform(0.5, 9000), "float"),
-            })
+            rows.append(
+                {
+                    "order_id": f"ORD-{1000 + i}",
+                    "category": rng.choice(CATEGORIES),
+                    "region": rng.choice(REGIONS),
+                    "units": self._messy_number(rng, rng.randint(1, 8000), "int"),
+                    "unit_price": self._messy_number(rng, rng.uniform(0.5, 9000), "float"),
+                }
+            )
         mess = self.config.mess_rate
         for row in rows:
             for col in ("units", "unit_price", "region"):
                 if rng.random() < mess:
                     row[col] = rng.choice(sorted(SENTINELS))
-        for _ in range(max(1, int(n * 0.06))):          # exact duplicates
+        for _ in range(max(1, int(n * 0.06))):  # exact duplicates
             rows.insert(rng.randrange(len(rows)), dict(rng.choice(rows)))
         return rows, spec
 
@@ -242,15 +262,13 @@ class PandasAgenticTaskset(vf.Taskset[PandasTask, PandasConfig]):
         writer.writerows(rows)
         return buf.getvalue()
 
-    def _build_repair(self, idx, rng) -> PandasData:
+    def _build_repair(self, idx: int, rng: random.Random) -> PandasData:
         rows, spec = self._raw_table(rng, self.config.num_rows)
         body = self._csv(rows)
         expected = repair_and_typecast(list(csv.DictReader(io.StringIO(body))), spec)
         prompt = (
-            f"`{WORKDIR}/raw.csv` is a messy order export: columns {', '.join(spec['columns'])}. "
-            f"Missing values appear as any of {sorted(SENTINELS - {''})} or empty cells; numbers may "
-            "carry thousands separators or currency symbols; some rows are exact duplicates.\n\n"
-            "Clean it with pandas (or any tool available in the sandbox):\n"
+            f"{_export_intro(f'{WORKDIR}/raw.csv', list(spec['columns']))}\n\n"
+            "Clean it (pandas is available in the sandbox):\n"
             "1. Drop exact-duplicate rows, keeping the first occurrence in file order.\n"
             "2. Normalise every missing-value marker to an EMPTY cell.\n"
             "3. Coerce `units` to integers and `unit_price` to floats rounded half-up to 2 decimals; "
@@ -258,58 +276,84 @@ class PandasAgenticTaskset(vf.Taskset[PandasTask, PandasConfig]):
             f"Write the cleaned table to `{WORKDIR}/clean.csv` with the same header, same row order. "
             "You are graded solely on that file."
         )
-        return PandasData(idx=idx, workdir=WORKDIR, prompt=prompt, family="repair",
-                          input_files={"raw.csv": body}, expected={"rows": expected},
-                          output_file="clean.csv", spec=spec)
+        return PandasData(
+            idx=idx,
+            image=IMAGE,
+            workdir=WORKDIR,
+            prompt=prompt,
+            family="repair",
+            input_files={"raw.csv": body},
+            expected={"rows": expected},
+            output_file="clean.csv",
+            spec=spec,
+        )
 
-    def _build_reconcile(self, idx, rng) -> PandasData:
+    def _build_reconcile(self, idx: int, rng: random.Random) -> PandasData:
         rows, spec_base = self._raw_table(rng, self.config.num_rows)
         body = self._csv(rows)
         spec = {**spec_base, "by": "category", "value": "unit_price"}
         cleaned = repair_and_typecast(list(csv.DictReader(io.StringIO(body))), spec_base)
         expected = group_aggregate(cleaned, "category", "unit_price")
         prompt = (
-            f"`{WORKDIR}/raw.csv` is the same style of messy order export (sentinel missing values, "
-            "formatted numbers, duplicate rows). After cleaning it (drop exact duplicates keeping "
-            "the first, treat sentinels as missing, parse numbers), reconcile `unit_price` by "
-            "`category`:\n\n"
+            f"{_export_intro(f'{WORKDIR}/raw.csv', list(spec_base['columns']))}\n\n"
+            "After cleaning it (drop exact duplicates keeping the first, treat missing markers as missing, "
+            "parse numbers), reconcile `unit_price` by `category`:\n\n"
             "For each category present, report count (non-missing prices), nulls (missing prices), "
             "sum and mean of prices, rounded half-up to 2 decimals at the end. A category whose "
-            "prices are all missing has mean null.\n\n"
+            "prices are all missing has count 0, sum 0.0 and mean null.\n\n"
             f'Write `{WORKDIR}/result.json` shaped like: {{"hardware": {{"count": 12, "nulls": 2, '
-            '"sum": 4210.55, "mean": 350.88}}}}. You are graded solely on that file.'
+            '"sum": 4210.55, "mean": 350.88}}. You are graded solely on that file.'
         )
-        return PandasData(idx=idx, workdir=WORKDIR, prompt=prompt, family="reconcile",
-                          input_files={"raw.csv": body}, expected={"groups": expected},
-                          output_file="result.json", spec=spec)
+        return PandasData(
+            idx=idx,
+            image=IMAGE,
+            workdir=WORKDIR,
+            prompt=prompt,
+            family="reconcile",
+            input_files={"raw.csv": body},
+            expected={"groups": expected},
+            output_file="result.json",
+            spec=spec,
+        )
 
-    def _build_merge(self, idx, rng) -> PandasData:
+    def _build_merge(self, idx: int, rng: random.Random) -> PandasData:
         left_rows, left_spec = self._raw_table(rng, self.config.num_rows)
-        right = [{"order_id": f"ORD-{1000 + i}", "shipment_id": f"SHP-{rng.randint(10000, 99999)}",
-                  "carrier": rng.choice(["auspost", "tnt", "dhl", "startrack"])}
-                 for i in rng.sample(range(self.config.num_rows + 20), self.config.num_rows // 2)]
-        for r in rng.sample(right, max(1, len(right) // 10)):     # duplicated shipment rows
-            right.append(dict(r))
+        right = [
+            {
+                "order_id": f"ORD-{1000 + i}",
+                "shipment_id": f"SHP-{rng.randint(10000, 99999)}",
+                "carrier": rng.choice(["auspost", "tnt", "dhl", "startrack"]),
+            }
+            for i in rng.sample(range(self.config.num_rows + 20), self.config.num_rows // 2)
+        ]
+        for r in rng.sample(right, max(1, len(right) // 10)):  # a second shipment for the same order
+            right.append({**r, "shipment_id": f"{r['shipment_id']}-2"})
         rng.shuffle(right)
         right_spec = {"order_id": "str", "shipment_id": "str", "carrier": "str"}
         left_body, right_body = self._csv(left_rows), self._csv(right)
         left_clean = repair_and_typecast(list(csv.DictReader(io.StringIO(left_body))), left_spec)
-        right_clean = repair_and_typecast(list(csv.DictReader(io.StringIO(right_body))),
-                                          {"columns": right_spec})
+        right_clean = repair_and_typecast(list(csv.DictReader(io.StringIO(right_body))), {"columns": right_spec})
         expected = left_join_unmatched(left_clean, right_clean, "order_id")
         prompt = (
-            f"`{WORKDIR}/left.csv` holds orders; `{WORKDIR}/right.csv` holds shipments (possibly "
-            "duplicated, possibly for orders that do not exist). Clean both (drop exact duplicates "
-            "keeping the first, sentinels are missing), then audit a LEFT join of orders to "
-            "shipments on `order_id`:\n\n"
-            "- `joined_rows`: row count of the left join (a duplicated shipment multiplies its order's rows)\n"
-            "- `left_only_keys`: sorted order_ids with no shipment\n"
-            "- `right_only_keys`: sorted order_ids appearing only in shipments\n\n"
-            f"Write `{WORKDIR}/result.json` with exactly those three keys. "
-            "You are graded solely on that file."
+            f"{_export_intro(f'{WORKDIR}/left.csv', list(left_spec['columns']))} "
+            f"`{WORKDIR}/right.csv` holds shipments: columns {', '.join(right_spec)}. An order may have "
+            "several shipments, and a shipment may reference an order that does not exist.\n\n"
+            "Clean both (drop exact duplicates keeping the first, treat missing markers as missing), then "
+            "audit a LEFT join of orders to shipments on `order_id`:\n\n"
+            "- `joined_rows`: row count of the left join (an order with several shipment rows contributes "
+            "one joined row per shipment)\n"
+            "- `left_only_keys`: order_ids with no shipment\n"
+            "- `right_only_keys`: order_ids appearing only in shipments\n\n"
+            f"Write `{WORKDIR}/result.json` with exactly those three keys. You are graded solely on that file."
         )
-        return PandasData(idx=idx, workdir=WORKDIR, prompt=prompt, family="merge",
-                          input_files={"left.csv": left_body, "right.csv": right_body},
-                          expected=expected, output_file="result.json",
-                          spec={"left_columns": left_spec["columns"], "right_columns": right_spec,
-                                "on": "order_id"})
+        return PandasData(
+            idx=idx,
+            image=IMAGE,
+            workdir=WORKDIR,
+            prompt=prompt,
+            family="merge",
+            input_files={"left.csv": left_body, "right.csv": right_body},
+            expected=expected,
+            output_file="result.json",
+            spec={"left_columns": left_spec["columns"], "right_columns": right_spec, "on": "order_id"},
+        )
