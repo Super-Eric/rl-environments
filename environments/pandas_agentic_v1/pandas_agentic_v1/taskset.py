@@ -67,6 +67,12 @@ class PandasTaskConfig(vf.TaskConfig):
     value (0.01 off) and an unrounded x.xx5 value (0.005 off) both fail regardless of float noise."""
 
 
+def _same_count(value, want: int) -> bool:
+    """Equal as a number: 8 and 8.0 match 8; 8.9, NaN and Infinity do not. `int()` would
+    truncate 8.9 to 8 and raise OverflowError on Infinity, which `json.loads` accepts."""
+    return float(value) == want
+
+
 class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
     NEEDS_CONTAINER = True
 
@@ -104,6 +110,11 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
             return self._score_reconcile(sub)
         return self._score_merge(sub)
 
+    def _close(self, value, want: float) -> bool:
+        """An acceptance test, not a rejection test: NaN fails every comparison, so
+        `abs(x - want) > tol` would let it through while `<= tol` turns it away."""
+        return abs(float(value) - want) <= self.config.float_tolerance
+
     def _score_repair(self, trace: vf.Trace) -> float:
         text = trace.info.get("submission_csv")
         if not text:
@@ -127,7 +138,7 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
                 try:
                     if kind == "int" and int(raw_value) != want:
                         return 0.0
-                    if kind == "float" and abs(float(raw_value) - want) > self.config.float_tolerance:
+                    if kind == "float" and not self._close(raw_value, want):
                         return 0.0
                     if kind == "str" and raw_value != want:
                         return 0.0
@@ -144,14 +155,14 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
             if not isinstance(got, dict):
                 return 0.0
             try:
-                if int(got["count"]) != want["count"] or int(got["nulls"]) != want["nulls"]:
+                if not (_same_count(got["count"], want["count"]) and _same_count(got["nulls"], want["nulls"])):
                     return 0.0
-                if abs(float(got["sum"]) - want["sum"]) > self.config.float_tolerance:
+                if not self._close(got["sum"], want["sum"]):
                     return 0.0
                 if want["mean"] is None:
                     if got["mean"] is not None:
                         return 0.0
-                elif abs(float(got["mean"]) - want["mean"]) > self.config.float_tolerance:
+                elif not self._close(got["mean"], want["mean"]):
                     return 0.0
             except (KeyError, TypeError, ValueError):
                 return 0.0
@@ -161,7 +172,7 @@ class PandasTask(vf.Task[PandasData, vf.State, PandasTaskConfig]):
         want = self.data.expected
         try:
             return float(
-                int(sub["joined_rows"]) == want["joined_rows"]
+                _same_count(sub["joined_rows"], want["joined_rows"])
                 and sorted(map(str, sub["left_only_keys"])) == want["left_only_keys"]
                 and sorted(map(str, sub["right_only_keys"])) == want["right_only_keys"]
             )

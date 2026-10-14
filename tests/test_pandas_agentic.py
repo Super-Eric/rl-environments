@@ -250,6 +250,41 @@ async def test_rounding_slack_rejects_bankers_and_unrounded_means():
     assert (await score_with(task, submission=sub)).reward == pytest.approx(1.0)
 
 
+async def test_nan_floats_are_not_paid():
+    """`json.loads` accepts a bare `NaN` and `float("nan")` parses from a CSV cell. Every comparison
+    with NaN is false, so the float checks must accept a value only when it is close, not reject it
+    only when it is far; otherwise an unsummed or NaN-propagated column passes."""
+    task = first("reconcile")
+    nan_sums = {g: {**v, "sum": float("nan")} for g, v in task.data.expected["groups"].items()}
+    assert (await score_with(task, submission=nan_sums)).reward == 0.0
+    nan_means = {g: {**v, "mean": float("nan")} for g, v in task.data.expected["groups"].items()}
+    assert any(v["mean"] is not None for v in task.data.expected["groups"].values())
+    assert (await score_with(task, submission=nan_means)).reward == 0.0
+
+    task = first("repair")
+    floats = [c for c, kind in task.data.spec["columns"].items() if kind == "float"]
+    rows = [
+        {k: ("nan" if k in floats and v is not None else v) for k, v in r.items()} for r in task.data.expected["rows"]
+    ]
+    assert (await score_with(task, submission_csv=clean_csv(task, rows))).reward == 0.0
+
+
+async def test_counts_are_compared_not_truncated():
+    """`int(61.9)` is 61 and `int(float("inf"))` raises; a count must equal the key as a number."""
+    task = first("reconcile")
+    groups = task.data.expected["groups"]
+    for bad in (0.9, float("inf")):
+        sub = {g: {**v, "count": v["count"] + bad} for g, v in groups.items()}
+        assert (await score_with(task, submission=sub)).reward == 0.0, f"count + {bad} was paid"
+    as_floats = {g: {**v, "count": float(v["count"]), "nulls": float(v["nulls"])} for g, v in groups.items()}
+    assert (await score_with(task, submission=as_floats)).reward == pytest.approx(1.0)
+
+    task = first("merge")
+    for bad in (0.9, float("inf")):
+        sub = dict(task.data.expected, joined_rows=task.data.expected["joined_rows"] + bad)
+        assert (await score_with(task, submission=sub)).reward == 0.0, f"joined_rows + {bad} was paid"
+
+
 # ------------------------------------------------------- runtime I/O (no container)
 
 
